@@ -1,5 +1,6 @@
 import { BarChart3, Box, ChartLine, Home, Settings, Users } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useServerStatus } from '../../hooks/useServerStatus';
 
 const mainNav = [
   { to: '/', label: 'Dashboard', icon: Home },
@@ -9,6 +10,9 @@ const mainNav = [
 ];
 
 export function Sidebar() {
+  const status = useServerStatus();
+  const tps = status?.tps ?? 20;
+
   return (
     <>
       <aside className="sidebar">
@@ -29,7 +33,7 @@ export function Sidebar() {
           <Settings size={18} />
           <span>Настройки</span>
         </a>
-        <div className="server-pill"><BarChart3 size={16} /> TPS 19.8</div>
+        <div className="server-pill"><BarChart3 size={16} /> TPS {tps.toFixed(tps === 20 ? 0 : 1)}</div>
       </aside>
       <nav className="bottom-nav" aria-label="Мобильная навигация">
         {mainNav.map(({ to, label, icon: Icon }) => (
