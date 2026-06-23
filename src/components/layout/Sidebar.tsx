@@ -1,4 +1,4 @@
-import { BarChart3, Box, ChartLine, Home, Settings, Users } from 'lucide-react';
+import { BarChart3, Box, ChartLine, Home, Users } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useServerStatus } from '../../hooks/useServerStatus';
 
@@ -28,11 +28,6 @@ export function Sidebar() {
             </NavLink>
           ))}
         </nav>
-        <div className="sidebar-section">Internal</div>
-        <a className="nav-link muted" href="#settings">
-          <Settings size={18} />
-          <span>Настройки</span>
-        </a>
         <div className="server-pill"><BarChart3 size={16} /> TPS {tps.toFixed(tps === 20 ? 0 : 1)}</div>
       </aside>
       <nav className="bottom-nav" aria-label="Мобильная навигация">
