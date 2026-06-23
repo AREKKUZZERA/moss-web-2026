@@ -8,11 +8,28 @@ function rank(item: ItemEntry) {
   return 2;
 }
 
+const minecraftCategoryOrder = [
+  'Строительные блоки',
+  'Цветные блоки',
+  'Природные блоки',
+  'Функциональные блоки',
+  'Редстоун',
+  'Инструменты',
+  'Бой',
+  'Еда и напитки',
+  'Ингредиенты',
+  'Яйца призыва',
+  'Операторские предметы',
+];
+
 export function ItemsTable({ items }: { items: ItemEntry[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [page, setPage] = useState(1);
-  const categories = useMemo(() => ['all', ...Array.from(new Set(items.map((item) => item.category)))], [items]);
+  const categories = useMemo(() => {
+    const present = new Set(items.map((item) => item.category));
+    return ['all', ...minecraftCategoryOrder.filter((entry) => present.has(entry))];
+  }, [items]);
 
   const filtered = useMemo(() => {
     return items

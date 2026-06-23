@@ -12,10 +12,6 @@ type ChartPoint = {
 
 type SummaryResponse = {
   players_online?: number;
-  totals?: {
-    items_crafted?: number;
-    blocks_mined?: number;
-  };
 };
 
 function dateKey(value: string | Date) {
@@ -48,6 +44,20 @@ function buildActivityHeatmap(history: HistoryPoint[]) {
 
     return { date: key, item_delta };
   });
+}
+
+function calculateWeeklyItemGrowth(history: HistoryPoint[]) {
+  const lastPoint = history.at(-1);
+  if (!lastPoint) return 0;
+
+  const weekAgo = new Date(lastPoint.timestamp);
+  weekAgo.setUTCDate(weekAgo.getUTCDate() - 7);
+
+  const previousPoint = [...history]
+    .reverse()
+    .find((point) => new Date(point.timestamp).getTime() <= weekAgo.getTime());
+
+  return Math.max(0, lastPoint.count - (previousPoint?.count ?? lastPoint.count));
 }
 
 function periodLength(period: '7d' | '30d' | '90d' | 'all') {
@@ -89,7 +99,7 @@ export async function fetchStatsOverview(signal?: AbortSignal): Promise<StatsOve
     top_falling: sorted.filter((item) => item.delta < 0).slice(0, 10),
     most_common: [...items].sort((a, b) => b.count - a.count).slice(0, 10),
     activity_heatmap: buildActivityHeatmap(history),
-    turnover_week: summary.totals?.items_crafted ?? summary.totals?.blocks_mined ?? 0,
+    turnover_week: calculateWeeklyItemGrowth(history),
     online_now: summary.players_online ?? 0,
     daily_peak: summary.players_online ?? 0,
   };
