@@ -368,15 +368,24 @@ export function LegalPage() {
               ) : null}
             </section>
           ))}
-          <div className="legal-note">
-            <strong>Проект:</strong> {projectName}
-            <br />
-            <strong>Правообладатель:</strong> {owner}
-            <br />
-            <strong>Разработчик:</strong> {developer}
-            <br />
-            <strong>Актуальная редакция:</strong> {document.updatedAt}
-          </div>
+          <dl className="legal-note">
+            <div>
+              <dt>Проект</dt>
+              <dd>{projectName}</dd>
+            </div>
+            <div>
+              <dt>Правообладатель</dt>
+              <dd>{owner}</dd>
+            </div>
+            <div>
+              <dt>Разработчик</dt>
+              <dd>{developer}</dd>
+            </div>
+            <div>
+              <dt>Актуальная редакция</dt>
+              <dd>{document.updatedAt}</dd>
+            </div>
+          </dl>
         </article>
       </div>
     </div>

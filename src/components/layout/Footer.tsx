@@ -12,9 +12,9 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-meta">
-        <strong>MOSS</strong>
+        <strong>Проект: MOSS</strong>
         <span>© {new Date().getFullYear()} команда default squad</span>
-        <span>Разработчик arekkuzzera</span>
+        <span>Разработчик: arekkuzzera</span>
       </div>
       <nav className="footer-links" aria-label="Документы проекта">
         {documentLinks.map(({ to, label }) => (

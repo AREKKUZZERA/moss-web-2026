@@ -10,7 +10,9 @@ const titles: Record<string, string> = {
 
 export function Topbar({ onThemeOpen }: { onThemeOpen: () => void }) {
   const location = useLocation();
-  const title = titles[location.pathname] ?? 'Игрок';
+  const title = location.pathname.startsWith('/legal')
+    ? 'Документы'
+    : titles[location.pathname] ?? 'Игрок';
 
   return (
     <header className="topbar">

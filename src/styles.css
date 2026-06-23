@@ -182,9 +182,10 @@ td small { display: block; margin-top: 3px; color: var(--mut); font-size: 11px; 
 .theme-preview { overflow: hidden; padding: 12px; border: 1px solid var(--b1); border-radius: var(--radius); color: var(--mut); background: var(--bg-deep); font-size: 11px; }
 
 .site-footer { flex-shrink: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; width: min(1480px, 100%); margin: 0 auto; padding: 22px clamp(18px, 2.4vw, 34px) 28px; border-top: 1px solid var(--b1); color: var(--txt2); }
-.footer-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; font-size: 12px; }
-.footer-meta strong { color: var(--txt); letter-spacing: 0; }
-.footer-meta span { color: var(--mut); }
+.footer-meta { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; min-width: 0; color: var(--mut); font-size: 12px; line-height: 1.4; }
+.footer-meta strong { color: var(--txt); font-weight: 700; letter-spacing: 0; }
+.footer-meta span { position: relative; color: var(--txt2); }
+.footer-meta span + span::before { content: ""; display: inline-block; width: 1px; height: 12px; margin: 0 14px 0 0; background: var(--b2); vertical-align: -2px; }
 .footer-links { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; min-width: 0; }
 .footer-links a { color: var(--txt2); text-decoration: none; font-size: 12px; }
 .footer-links a:hover { color: var(--txt); }
@@ -205,8 +206,11 @@ td small { display: block; margin-top: 3px; color: var(--mut); font-size: 11px; 
 .legal-document p { max-width: 860px; }
 .legal-document ul { display: grid; gap: 8px; max-width: 900px; margin: 0; padding-left: 18px; color: var(--txt2); font-size: 13px; line-height: 1.5; }
 .legal-document li::marker { color: var(--acc-l); }
-.legal-note { padding: 14px; border: 1px solid var(--b1); border-radius: var(--radius); color: var(--txt2); background: var(--s1); font-size: 13px; line-height: 1.6; }
-.legal-note strong { color: var(--txt); }
+.legal-note { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 0; margin: 4px 0 0; padding: 0; overflow: hidden; border: 1px solid var(--b1); border-radius: var(--radius); background: var(--s1); }
+.legal-note div { min-width: 0; padding: 13px 14px; border-right: 1px solid var(--b1); }
+.legal-note div:last-child { border-right: 0; }
+.legal-note dt { margin: 0 0 5px; color: var(--mut); font-size: 10px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+.legal-note dd { margin: 0; color: var(--txt); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
 
 .skeleton-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .skeleton { display: block; min-height: 124px; border-radius: var(--radius-l); background: linear-gradient(90deg, var(--s1), var(--s3), var(--s1)); background-size: 220% 100%; animation: shimmer 1.2s infinite; }
@@ -240,6 +244,9 @@ td small { display: block; margin-top: 3px; color: var(--mut); font-size: 11px; 
   .footer-links { justify-content: flex-start; }
   .legal-layout { grid-template-columns: 1fr; }
   .legal-nav { position: static; display: flex; flex-wrap: wrap; }
+  .legal-note { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .legal-note div:nth-child(2n) { border-right: 0; }
+  .legal-note div:nth-child(n + 3) { border-top: 1px solid var(--b1); }
   .section-head .field { width: 100%; }
   .dashboard-grid, .top-charts-grid { grid-template-columns: 1fr; }
   .player-hero { align-items: flex-start; }
@@ -288,9 +295,13 @@ td small { display: block; margin-top: 3px; color: var(--mut); font-size: 11px; 
   .bottom-nav { left: 8px; right: 8px; bottom: 8px; }
   .bottom-link { min-height: 42px; }
   .footer-meta { display: grid; gap: 6px; }
+  .footer-meta span + span::before { display: none; }
   .footer-links { gap: 10px; }
   .legal-hero, .legal-document { padding: 16px; }
   .legal-meta { grid-template-columns: 1fr; }
+  .legal-note { grid-template-columns: 1fr; }
+  .legal-note div, .legal-note div:nth-child(2n) { border-right: 0; }
+  .legal-note div + div { border-top: 1px solid var(--b1); }
   .heatmap { padding-inline: 8px; }
   table { min-width: 680px; }
 }
