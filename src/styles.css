@@ -89,6 +89,8 @@ h1, h2, h3, p, strong, span, small, b { overflow-wrap: break-word; }
 .stat-card strong { font-size: clamp(24px, 3vw, 34px); }
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(min(100%, 320px), 0.65fr); gap: 18px; align-items: stretch; }
 .top-charts-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.charts-activity { display: grid; justify-items: center; }
+.charts-activity .heatmap-panel { width: min(100%, 720px); min-height: 210px; }
 .panel, .stat-card, .player-card { min-width: 0; }
 .chart-box { padding: 4px 10px 14px; }
 .chart-box.small { padding-top: 0; }
@@ -254,6 +256,7 @@ td small { display: block; margin-top: 3px; color: var(--mut); font-size: 11px; 
   .legal-note div:nth-child(n + 3) { border-top: 1px solid var(--b1); }
   .section-head .field { width: 100%; }
   .dashboard-grid, .top-charts-grid { grid-template-columns: 1fr; }
+  .charts-activity .heatmap-panel { width: 100%; }
   .player-hero { align-items: flex-start; }
 }
 

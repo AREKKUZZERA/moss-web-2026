@@ -18,7 +18,9 @@ export function ChartsPage() {
         <TopItemsBar title="ТОП 10 растущих" items={overview.top_growing} tone="green" />
         <TopItemsBar title="ТОП 10 падающих" items={overview.top_falling} tone="red" />
       </div>
-      <ActivityHeatmap points={overview.activity_heatmap} />
+      <div className="charts-activity">
+        <ActivityHeatmap points={overview.activity_heatmap} />
+      </div>
     </div>
   );
 }
