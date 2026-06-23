@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm ci",
+  "rewrites": [
+    {
+      "source": "/api/table/:path*",
+      "destination": "http://default-squad.ru:8542/:path*"
+    },
+    {
+      "source": "/api/moss/:path*",
+      "destination": "http://default-squad.ru:24442/moss/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

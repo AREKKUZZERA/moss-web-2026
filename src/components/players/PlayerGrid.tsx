@@ -1,0 +1,49 @@
+import { useMemo, useState } from 'react';
+import type { PlayerSummary } from '../../types/player';
+import { PlayerCard } from './PlayerCard';
+
+export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOpen: (player: PlayerSummary) => void }) {
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState('play');
+
+  const filtered = useMemo(() => {
+    return players
+      .filter((player) => player.username.toLowerCase().includes(query.toLowerCase()))
+      .filter((player) => filter === 'all' || (filter === 'online' ? player.online : player.rank === filter))
+      .sort((a, b) => {
+        if (sort === 'seen') return new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime();
+        if (sort === 'rank') return a.rank.localeCompare(b.rank);
+        return b.play_time_hours - a.play_time_hours;
+      });
+  }, [players, query, filter, sort]);
+
+  return (
+    <section className="panel">
+      <div className="section-head">
+        <div>
+          <h2>Игроки</h2>
+          <p>Поиск, фильтр и быстрый просмотр статистики.</p>
+        </div>
+        <input className="field" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ник игрока" />
+      </div>
+      <div className="toolbar-line">
+        <div className="segmented">
+          {['all', 'online', 'vip', 'admin'].map((entry) => (
+            <button key={entry} type="button" className={filter === entry ? 'active' : ''} onClick={() => setFilter(entry)}>
+              {entry === 'all' ? 'Все' : entry}
+            </button>
+          ))}
+        </div>
+        <select className="field" value={sort} onChange={(e) => setSort(e.target.value)}>
+          <option value="play">По времени игры</option>
+          <option value="seen">По дате захода</option>
+          <option value="rank">По рангу</option>
+        </select>
+      </div>
+      <div className="player-grid">
+        {filtered.map((player) => <PlayerCard key={player.uuid} player={player} onOpen={onOpen} />)}
+      </div>
+    </section>
+  );
+}
