@@ -97,6 +97,11 @@ h1, h2, h3, p, strong, span, small, b { overflow-wrap: break-word; }
 .segmented button, .chip, .pager button, .drawer-actions button, .primary-button { min-height: 34px; border: 1px solid var(--b1); border-radius: var(--radius); background: var(--s1); color: var(--txt2); padding: 0 12px; text-decoration: none; }
 .segmented button.active, .chip.active, .primary-button { color: var(--txt); background: var(--acc-d); border-color: var(--acc-g); }
 .chips { padding: 0 18px 14px; }
+.item-categories { padding-bottom: 10px; }
+.items-sort-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 18px 14px; padding: 10px 12px; border-top: 1px solid var(--b1); border-radius: var(--radius); background: color-mix(in srgb, var(--s1) 72%, transparent); }
+.items-sort-bar > span { color: var(--mut); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.delta-sort { padding: 0; justify-content: flex-end; }
+.delta-sort button { min-height: 30px; padding-inline: 10px; font-size: 12px; }
 
 .table-panel { overflow: hidden; }
 .table-wrap { overflow-x: auto; border-top: 1px solid var(--b1); scrollbar-width: none; -ms-overflow-style: none; }

@@ -2,10 +2,19 @@ import { useMemo, useState } from 'react';
 import type { ItemEntry } from '../../types/item';
 import { ItemRow } from './ItemRow';
 
+type DeltaSortMode = 'all' | 'up' | 'flat' | 'down';
+
 function rank(item: ItemEntry) {
   if (item.delta > 0) return 0;
   if (item.delta === 0) return 1;
   return 2;
+}
+
+function matchesDeltaSort(item: ItemEntry, sort: DeltaSortMode) {
+  if (sort === 'up') return item.delta > 0;
+  if (sort === 'flat') return item.delta === 0;
+  if (sort === 'down') return item.delta < 0;
+  return true;
 }
 
 const minecraftCategoryOrder = [
@@ -25,6 +34,7 @@ const minecraftCategoryOrder = [
 export function ItemsTable({ items }: { items: ItemEntry[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
+  const [deltaSort, setDeltaSort] = useState<DeltaSortMode>('all');
   const [page, setPage] = useState(1);
   const categories = useMemo(() => {
     const present = new Set(items.map((item) => item.category));
@@ -35,8 +45,9 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
     return items
       .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()) || item.id.includes(query.toLowerCase()))
       .filter((item) => category === 'all' || item.category === category)
+      .filter((item) => matchesDeltaSort(item, deltaSort))
       .sort((a, b) => rank(a) - rank(b) || Math.abs(b.delta) - Math.abs(a.delta));
-  }, [items, query, category]);
+  }, [items, query, category, deltaSort]);
 
   const pageSize = 14;
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -51,7 +62,7 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
         </div>
         <input className="field" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder="Найти предмет" />
       </div>
-      <div className="chips">
+      <div className="chips item-categories">
         {categories.map((entry) => (
           <button
             className={`chip ${entry === category ? 'active' : ''}`}
@@ -62,6 +73,26 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
             {entry === 'all' ? 'Все' : entry}
           </button>
         ))}
+      </div>
+      <div className="items-sort-bar">
+        <span>Изменение</span>
+        <div className="segmented delta-sort">
+          {[
+            ['all', 'Все'],
+            ['up', 'Рост'],
+            ['flat', 'Без изменений'],
+            ['down', 'Падение'],
+          ].map(([value, label]) => (
+            <button
+              className={deltaSort === value ? 'active' : ''}
+              key={value}
+              type="button"
+              onClick={() => { setDeltaSort(value as DeltaSortMode); setPage(1); }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="table-wrap">
         <table>

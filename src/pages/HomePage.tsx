@@ -24,7 +24,7 @@ export function HomePage() {
         <TopItemsBar title="ТОП рост" items={overview.top_growing} tone="green" />
         <TopItemsBar title="ТОП падение" items={overview.top_falling} tone="red" />
       </div>
-      <ItemsTable items={items.slice(0, 18)} />
+      <ItemsTable items={items} />
     </div>
   );
 }
