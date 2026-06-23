@@ -1,4 +1,4 @@
-import { BarChart3, Box, ChartLine, Home, Settings, Sprout, Users } from 'lucide-react';
+import { BarChart3, Box, ChartLine, Home, Settings, Users } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const mainNav = [
@@ -13,8 +13,8 @@ export function Sidebar() {
     <>
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-mark"><Sprout size={18} /></span>
-          <strong>MOSS</strong>
+          <img className="brand-cover" src="/MOSS-cover.png" alt="MOSS" />
+          <img className="brand-logo" src="/MOSS-logo.png" alt="MOSS" />
         </div>
         <nav className="nav-list" aria-label="Основная навигация">
           {mainNav.map(({ to, label, icon: Icon }) => (
