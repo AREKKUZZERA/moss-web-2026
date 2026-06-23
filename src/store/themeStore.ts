@@ -81,21 +81,48 @@ function loadTheme(): ThemeVars {
 }
 
 let frame = 0;
-function applyTheme(theme: ThemeVars) {
-  window.cancelAnimationFrame(frame);
-  frame = window.requestAnimationFrame(() => {
-    Object.entries(theme).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(key, value);
-    });
+let persistTimer = 0;
+const pendingVars = new Map<keyof ThemeVars, string>();
+
+function persistTheme(theme: ThemeVars) {
+  window.clearTimeout(persistTimer);
+  persistTimer = window.setTimeout(() => {
     localStorage.setItem('moss-theme', JSON.stringify(theme));
+  }, 180);
+}
+
+function flushVars() {
+  pendingVars.forEach((value, key) => {
+    document.documentElement.style.setProperty(key, value);
   });
+  pendingVars.clear();
+  frame = 0;
+}
+
+function scheduleVar(key: keyof ThemeVars, value: string) {
+  pendingVars.set(key, value);
+  if (!frame) {
+    frame = window.requestAnimationFrame(flushVars);
+  }
+}
+
+function applyTheme(theme: ThemeVars) {
+  Object.entries(theme).forEach(([key, value]) => {
+    pendingVars.set(key as keyof ThemeVars, value);
+  });
+  if (!frame) {
+    frame = window.requestAnimationFrame(flushVars);
+  }
+  persistTheme(theme);
 }
 
 export const useThemeStore = create<ThemeStore>((set, get) => ({
   theme: loadTheme(),
   setVar: (key, value) => {
+    if (get().theme[key] === value) return;
     const theme = { ...get().theme, [key]: value };
-    applyTheme(theme);
+    scheduleVar(key, value);
+    persistTheme(theme);
     set({ theme });
   },
   importTheme: (incoming) => {

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useItemHistory } from '../../hooks/useCharts';
-import { useThemeStore } from '../../store/themeStore';
 import { formatNumber } from '../../utils/format';
 
 const periods = [
@@ -12,7 +11,6 @@ const periods = [
 ] as const;
 
 export function ItemHistoryChart() {
-  const theme = useThemeStore((state) => state.theme);
   const [period, setPeriod] = useState<(typeof periods)[number][0]>('30d');
   const history = useItemHistory('minecraft:diamond', period);
   const data = useMemo(() => history.map((point) => ({
@@ -45,7 +43,7 @@ export function ItemHistoryChart() {
             <CartesianGrid stroke="var(--b1)" vertical={false} />
             <XAxis dataKey="label" stroke="var(--mut)" tickLine={false} axisLine={false} minTickGap={24} />
             <YAxis stroke="var(--mut)" tickLine={false} axisLine={false} tickFormatter={(value) => formatNumber(Number(value))} />
-            <Tooltip contentStyle={{ background: 'var(--s2)', border: '1px solid var(--b2)', borderRadius: theme['--radius'] }} />
+            <Tooltip contentStyle={{ background: 'var(--s2)', border: '1px solid var(--b2)', borderRadius: 'var(--radius)' }} />
             <Area type="monotone" dataKey="count" stroke="var(--acc)" fill="url(#itemFill)" strokeWidth={2} isAnimationActive={data.length < 1000} />
           </AreaChart>
         </ResponsiveContainer>

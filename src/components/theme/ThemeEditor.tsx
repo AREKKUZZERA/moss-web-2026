@@ -1,5 +1,6 @@
 import { Download, RotateCcw, Upload, X } from 'lucide-react';
-import { useRef } from 'react';
+import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_THEME, type ThemeVars, useThemeStore } from '../../store/themeStore';
 
 const groups: Array<[string, Array<keyof ThemeVars>]> = [
@@ -21,20 +22,69 @@ function getRadiusMax(key: keyof ThemeVars) {
   return key === '--radius-round' ? 100 : 36;
 }
 
+function getRadiusUnit(key: keyof ThemeVars) {
+  return key === '--radius-round' ? '%' : 'px';
+}
+
+function getRadiusPercent(key: keyof ThemeVars, value: string) {
+  return `${Math.min(100, (getRadiusNumber(value) / getRadiusMax(key)) * 100)}%`;
+}
+
 export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { theme, setVar, reset, importTheme } = useThemeStore();
+  const theme = useThemeStore((state) => state.theme);
+  const setVar = useThemeStore((state) => state.setVar);
+  const reset = useThemeStore((state) => state.reset);
+  const importTheme = useThemeStore((state) => state.importTheme);
+  const [draftTheme, setDraftTheme] = useState(theme);
   const drawerRef = useRef<HTMLElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const commitTimers = useRef<Partial<Record<keyof ThemeVars, number>>>({});
+
+  useEffect(() => {
+    setDraftTheme(theme);
+  }, [theme]);
+
+  useEffect(() => () => {
+    Object.values(commitTimers.current).forEach((timer) => window.clearTimeout(timer));
+  }, []);
+
+  function clearCommitTimers() {
+    Object.values(commitTimers.current).forEach((timer) => window.clearTimeout(timer));
+    commitTimers.current = {};
+  }
+
+  function commitVar(key: keyof ThemeVars, value: string, delay = 80) {
+    setDraftTheme((current) => ({ ...current, [key]: value }));
+    window.clearTimeout(commitTimers.current[key]);
+    commitTimers.current[key] = window.setTimeout(() => {
+      setVar(key, value);
+    }, delay);
+  }
+
+  function commitNow(key: keyof ThemeVars, value: string) {
+    window.clearTimeout(commitTimers.current[key]);
+    setDraftTheme((current) => ({ ...current, [key]: value }));
+    setVar(key, value);
+  }
 
   function exportCss() {
-    const body = Object.entries(theme).map(([key, value]) => `  ${key}: ${value};`).join('\n');
+    const body = Object.entries(draftTheme).map(([key, value]) => `  ${key}: ${value};`).join('\n');
     navigator.clipboard.writeText(`:root {\n${body}\n}`);
   }
 
   async function importFile(file?: File) {
     if (!file) return;
     const text = await file.text();
-    importTheme(JSON.parse(text));
+    clearCommitTimers();
+    const incoming = JSON.parse(text);
+    setDraftTheme({ ...DEFAULT_THEME, ...incoming });
+    importTheme(incoming);
+  }
+
+  function handleReset() {
+    clearCommitTimers();
+    setDraftTheme(DEFAULT_THEME);
+    reset();
   }
 
   function handleClose() {
@@ -59,8 +109,8 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
           {keys.map((key) => (
             <label className="theme-row" key={key}>
               <span>{key}</span>
-              <input type="color" value={normalizeColor(theme[key])} onChange={(e) => setVar(key, e.target.value)} />
-              <input value={theme[key]} onChange={(e) => setVar(key, e.target.value)} />
+              <input type="color" value={normalizeColor(draftTheme[key])} onChange={(e) => commitVar(key, e.target.value)} onBlur={(e) => commitNow(key, e.target.value)} />
+              <input value={draftTheme[key]} onChange={(e) => commitVar(key, e.target.value, 140)} onBlur={(e) => commitNow(key, e.target.value)} />
             </label>
           ))}
         </section>
@@ -70,13 +120,22 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
         {radiusKeys.map((key) => (
           <label className="theme-row radius-row" key={key}>
             <span>{key}</span>
-            <input type="range" min="0" max={getRadiusMax(key)} value={getRadiusNumber(theme[key])} onChange={(e) => setVar(key, `${e.target.value}px`)} />
-            <input value={theme[key]} onChange={(e) => setVar(key, e.target.value)} />
+            <input
+              type="range"
+              min="0"
+              max={getRadiusMax(key)}
+              value={getRadiusNumber(draftTheme[key])}
+              style={{ '--range-p': getRadiusPercent(key, draftTheme[key]) } as CSSProperties & Record<'--range-p', string>}
+              onChange={(e) => commitVar(key, `${e.target.value}${getRadiusUnit(key)}`)}
+              onPointerUp={(e) => commitNow(key, `${e.currentTarget.value}${getRadiusUnit(key)}`)}
+              onKeyUp={(e) => commitNow(key, `${e.currentTarget.value}${getRadiusUnit(key)}`)}
+            />
+            <input value={draftTheme[key]} onChange={(e) => commitVar(key, e.target.value, 140)} onBlur={(e) => commitNow(key, e.target.value)} />
           </label>
         ))}
       </section>
       <div className="drawer-actions">
-        <button type="button" onClick={reset}><RotateCcw size={16} /> Сбросить</button>
+        <button type="button" onClick={handleReset}><RotateCcw size={16} /> Сбросить</button>
         <button type="button" onClick={exportCss}><Download size={16} /> CSS</button>
         <button type="button" onClick={() => fileRef.current?.click()}><Upload size={16} /> Импорт</button>
         <input ref={fileRef} hidden type="file" accept="application/json" onChange={(e) => importFile(e.target.files?.[0])} />
