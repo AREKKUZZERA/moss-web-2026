@@ -15,7 +15,7 @@ type LegalDocument = {
 };
 
 const projectName = 'MOSS';
-const owner = 'команда default squad';
+const owner = 'arekkuzzera';
 const developer = 'arekkuzzera';
 
 const documents: Record<string, LegalDocument> = {
@@ -301,7 +301,7 @@ const documents: Record<string, LegalDocument> = {
       {
         heading: '5. Официальные каналы',
         paragraphs: [
-          'До публикации отдельного канала связи используйте доступные публичные каналы проекта, связанные с MOSS и командой default squad. Неофициальные аккаунты, личные сообщения третьим лицам и копии сайта не считаются официальными каналами.',
+          'До публикации отдельного канала связи используйте доступные публичные каналы проекта, связанные с MOSS и arekkuzzera. Неофициальные аккаунты, личные сообщения третьим лицам и копии сайта не считаются официальными каналами.',
           'Юридически значимые уведомления должны содержать данные отправителя, основание требования, ссылки на спорные материалы и документы, подтверждающие полномочия заявителя.',
         ],
       },
@@ -327,22 +327,6 @@ export function LegalPage() {
 
   return (
     <div className="page-stack legal-page">
-      <section className="panel legal-hero">
-        <span className="crumb">Документы проекта</span>
-        <h1>{document.title}</h1>
-        <p>{document.lead}</p>
-        <dl className="legal-meta">
-          <div>
-            <dt>Статус</dt>
-            <dd>{document.status}</dd>
-          </div>
-          <div>
-            <dt>Редакция</dt>
-            <dd>{document.updatedAt}</dd>
-          </div>
-        </dl>
-      </section>
-
       <div className="legal-layout">
         <nav className="panel legal-nav" aria-label="Разделы документов">
           {documentNav.map(({ slug: navSlug, label }) => (
@@ -353,6 +337,21 @@ export function LegalPage() {
         </nav>
 
         <article className="panel legal-document">
+          <header className="legal-document-head">
+            <span className="crumb">Документы проекта</span>
+            <h1>{document.title}</h1>
+            <p>{document.lead}</p>
+            <dl className="legal-meta">
+              <div>
+                <dt>Статус</dt>
+                <dd>{document.status}</dd>
+              </div>
+              <div>
+                <dt>Редакция</dt>
+                <dd>{document.updatedAt}</dd>
+              </div>
+            </dl>
+          </header>
           {document.sections.map((section) => (
             <section key={section.heading}>
               <h2>{section.heading}</h2>

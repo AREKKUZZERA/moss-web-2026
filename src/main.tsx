@@ -10,6 +10,7 @@ const ChartsPage = lazy(() => import('./pages/ChartsPage').then((module) => ({ d
 const PlayersPage = lazy(() => import('./pages/PlayersPage').then((module) => ({ default: module.PlayersPage })));
 const PlayerDetailPage = lazy(() => import('./pages/PlayerDetailPage').then((module) => ({ default: module.PlayerDetailPage })));
 const LegalPage = lazy(() => import('./pages/LegalPage').then((module) => ({ default: module.LegalPage })));
+const ChangelogPage = lazy(() => import('./pages/ChangelogPage').then((module) => ({ default: module.ChangelogPage })));
 
 function withSuspense(element: React.ReactNode) {
   return <Suspense fallback={<div className="route-loader" />}>{element}</Suspense>;
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       { path: '/charts', element: withSuspense(<ChartsPage />) },
       { path: '/players', element: withSuspense(<PlayersPage />) },
       { path: '/players/:uuid', element: withSuspense(<PlayerDetailPage />) },
+      { path: '/changelog', element: withSuspense(<ChangelogPage />) },
       { path: '/legal', element: <Navigate to="/legal/offer" replace /> },
       { path: '/legal/:slug', element: withSuspense(<LegalPage />) },
       { path: '*', element: <Navigate to="/" replace /> },

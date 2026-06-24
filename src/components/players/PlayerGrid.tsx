@@ -21,10 +21,6 @@ export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOp
   return (
     <section className="panel">
       <div className="section-head">
-        <div>
-          <h2>Игроки</h2>
-          <p>Поиск, фильтр и быстрый просмотр статистики.</p>
-        </div>
         <input className="field" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ник игрока" />
       </div>
       <div className="toolbar-line">

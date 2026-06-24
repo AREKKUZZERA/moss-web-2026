@@ -40,7 +40,21 @@ function heatmapLayout(width: number, height: number, count: number) {
   return { columns, cell };
 }
 
-export function ActivityHeatmap({ points }: { points: HeatmapPoint[] }) {
+type ActivityHeatmapProps = {
+  points: HeatmapPoint[];
+  title?: string;
+  description?: string;
+  unitLabel?: string;
+  tone?: 'accent' | 'green';
+};
+
+export function ActivityHeatmap({
+  points,
+  title = 'Активность',
+  description = '365 дней изменений.',
+  unitLabel = 'предметов',
+  tone = 'accent',
+}: ActivityHeatmapProps) {
   const max = Math.max(...points.map((point) => point.item_delta), 1);
   const heatmapRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -75,7 +89,7 @@ export function ActivityHeatmap({ points }: { points: HeatmapPoint[] }) {
     const deltaElement = tooltip.querySelector('b');
 
     if (dateElement) dateElement.textContent = formatHeatmapDate(date);
-    if (deltaElement) deltaElement.textContent = `+${formatNumber(Number(delta), false)} предметов`;
+    if (deltaElement) deltaElement.textContent = `+${formatNumber(Number(delta), false)} ${unitLabel}`;
 
     tooltip.hidden = false;
     const tooltipRect = tooltip.getBoundingClientRect();
@@ -87,10 +101,10 @@ export function ActivityHeatmap({ points }: { points: HeatmapPoint[] }) {
   const getHeatTarget = (target: EventTarget | null) => (target instanceof HTMLElement ? target.closest<HTMLButtonElement>('.heat') : null);
 
   return (
-    <section className="panel heatmap-panel">
+    <section className={`panel heatmap-panel ${tone === 'green' ? 'green-heatmap' : ''}`}>
       <div className="section-head compact">
-        <h2>Активность</h2>
-        <p>365 дней изменений.</p>
+        <h2>{title}</h2>
+        <p>{description}</p>
       </div>
       <div
         ref={heatmapRef}
@@ -115,7 +129,7 @@ export function ActivityHeatmap({ points }: { points: HeatmapPoint[] }) {
       >
         {points.map((point) => {
           const level = Math.ceil((point.item_delta / max) * 4);
-          const label = `${formatHeatmapDate(point.date)}: +${formatNumber(point.item_delta, false)} предметов`;
+          const label = `${formatHeatmapDate(point.date)}: +${formatNumber(point.item_delta, false)} ${unitLabel}`;
           return (
             <button
               key={point.date}
