@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { HeatmapPoint } from '../../types/stats';
 import { formatNumber } from '../../utils/format';
@@ -48,17 +48,28 @@ type ActivityHeatmapProps = {
   tone?: 'accent' | 'green';
 };
 
-export function ActivityHeatmap({
+function ActivityHeatmapComponent({
   points,
   title = 'Активность',
   description = '365 дней изменений.',
   unitLabel = 'предметов',
   tone = 'accent',
 }: ActivityHeatmapProps) {
-  const max = Math.max(...points.map((point) => point.item_delta), 1);
+  const max = useMemo(() => {
+    let value = 1;
+    for (const point of points) {
+      if (point.item_delta > value) value = point.item_delta;
+    }
+    return value;
+  }, [points]);
   const heatmapRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState(() => ({ columns: 24, cell: 12 }));
+  const cells = useMemo(() => points.map((point) => {
+    const level = Math.ceil((point.item_delta / max) * 4);
+    const label = `${formatHeatmapDate(point.date)}: ${point.estimated ? 'примерно ' : '+'}${formatNumber(point.item_delta, false)} ${unitLabel}`;
+    return { point, level, label };
+  }), [points, max, unitLabel]);
 
   useEffect(() => {
     if (!heatmapRef.current) return undefined;
@@ -128,9 +139,7 @@ export function ActivityHeatmap({
           if (target) showTooltipForCell(target);
         }}
       >
-        {points.map((point) => {
-          const level = Math.ceil((point.item_delta / max) * 4);
-          const label = `${formatHeatmapDate(point.date)}: ${point.estimated ? 'примерно ' : '+'}${formatNumber(point.item_delta, false)} ${unitLabel}`;
+        {cells.map(({ point, level, label }) => {
           return (
             <button
               key={point.date}
@@ -151,3 +160,5 @@ export function ActivityHeatmap({
     </section>
   );
 }
+
+export const ActivityHeatmap = memo(ActivityHeatmapComponent);

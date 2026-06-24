@@ -42,11 +42,17 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
   }, [items]);
 
   const filtered = useMemo(() => {
-    return items
-      .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()) || item.id.includes(query.toLowerCase()))
-      .filter((item) => category === 'all' || item.category === category)
-      .filter((item) => matchesDeltaSort(item, deltaSort))
-      .sort((a, b) => rank(a) - rank(b) || Math.abs(b.delta) - Math.abs(a.delta));
+    const normalizedQuery = query.trim().toLowerCase();
+    const result: ItemEntry[] = [];
+
+    for (const item of items) {
+      if (normalizedQuery && !item.name.toLowerCase().includes(normalizedQuery) && !item.id.includes(normalizedQuery)) continue;
+      if (category !== 'all' && item.category !== category) continue;
+      if (!matchesDeltaSort(item, deltaSort)) continue;
+      result.push(item);
+    }
+
+    return result.sort((a, b) => rank(a) - rank(b) || Math.abs(b.delta) - Math.abs(a.delta));
   }, [items, query, category, deltaSort]);
 
   const pageSize = 14;

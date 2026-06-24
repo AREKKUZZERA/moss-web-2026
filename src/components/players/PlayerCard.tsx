@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Clock, Footprints, Pickaxe, Skull, Swords } from 'lucide-react';
 import type { PlayerSummary } from '../../types/player';
 import { formatDuration, formatNumber, formatNumberWithUnit, formatRelative } from '../../utils/format';
 import { getPlayerAvatar } from '../../utils/minecraft';
 
-export function PlayerCard({ player, onOpen }: { player: PlayerSummary; onOpen: (player: PlayerSummary) => void }) {
+function PlayerCardComponent({ player, onOpen }: { player: PlayerSummary; onOpen: (player: PlayerSummary) => void }) {
   const sessionLabel = player.activity?.active_now_hours ? `Сессия: ${formatDuration(player.activity.active_now_hours)}` : `Последний раз: ${formatRelative(player.last_seen)}`;
 
   return (
@@ -27,3 +28,5 @@ export function PlayerCard({ player, onOpen }: { player: PlayerSummary; onOpen: 
     </button>
   );
 }
+
+export const PlayerCard = memo(PlayerCardComponent);

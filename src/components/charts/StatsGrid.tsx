@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, Box, Clock, Hammer, Pickaxe, Skull, Swords, TrendingUp, Users } from 'lucide-react';
 import type { StatsOverview } from '../../types/stats';
 import { formatNumber, formatNumberWithUnit } from '../../utils/format';
@@ -8,7 +8,7 @@ type StatsGridProps = {
   variant?: 'grid' | 'marquee';
 };
 
-export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
+function StatsGridComponent({ overview, variant = 'grid' }: StatsGridProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const targetSpeedRef = useRef(1);
   const [isStaticLayout, setIsStaticLayout] = useState(() => (
@@ -17,7 +17,7 @@ export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
       : window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ));
 
-  const cards = [
+  const cards = useMemo(() => [
     { label: 'Всего игроков', value: formatNumber(overview.server_totals.players_total, false), icon: Users, tone: 'cyan' },
     { label: 'Общее время', value: formatNumberWithUnit(overview.server_totals.total_playtime_hours, 'ч'), icon: Clock, tone: 'green' },
     { label: 'Смерти', value: formatNumber(overview.server_totals.total_deaths, false), icon: Skull, tone: 'red' },
@@ -27,9 +27,9 @@ export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
     { label: 'Всего предметов', value: formatNumber(overview.total_items), icon: Box, tone: 'acc' },
     { label: 'Уникальных типов предметов', value: formatNumber(overview.total_unique_items, false), icon: Activity, tone: 'cyan' },
     { label: 'Прирост за неделю', value: formatNumber(overview.turnover_week), icon: TrendingUp, tone: 'green' },
-  ];
+  ], [overview]);
   const isMarquee = variant === 'marquee' && !isStaticLayout;
-  const visibleCards = isMarquee ? [...cards, ...cards] : cards;
+  const visibleCards = useMemo(() => (isMarquee ? [...cards, ...cards] : cards), [cards, isMarquee]);
 
   useEffect(() => {
     const staticQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -83,9 +83,9 @@ export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
     };
   }, [isMarquee]);
 
-  const setMarqueeSpeed = (speed: number) => {
+  const setMarqueeSpeed = useCallback((speed: number) => {
     targetSpeedRef.current = speed;
-  };
+  }, []);
 
   return (
     <div
@@ -107,3 +107,5 @@ export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
     </div>
   );
 }
+
+export const StatsGrid = memo(StatsGridComponent);

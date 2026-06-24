@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import type { ItemEntry } from '../../types/item';
 import { formatDate, formatNumber, formatSigned } from '../../utils/format';
 import { ItemIcon } from './ItemIcon';
 
-export function ItemRow({ item, index }: { item: ItemEntry; index: number }) {
+function ItemRowComponent({ item, index }: { item: ItemEntry; index: number }) {
   const state = item.delta > 0 ? 'up' : item.delta < 0 ? 'down' : 'flat';
   return (
     <tr className={`item-row ${state}`} style={{ animationDelay: `${Math.min(index, 18) * 24}ms` }}>
@@ -20,3 +21,5 @@ export function ItemRow({ item, index }: { item: ItemEntry; index: number }) {
     </tr>
   );
 }
+
+export const ItemRow = memo(ItemRowComponent);

@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { ItemEntry } from '../../types/item';
 import { formatNumber } from '../../utils/format';
@@ -17,8 +18,8 @@ function ItemNameTick({ x = 0, y = 0, payload }: { x?: number; y?: number; paylo
   );
 }
 
-export function TopItemsBar({ title, items, tone }: { title: string; items: ItemEntry[]; tone: 'green' | 'red' }) {
-  const data = items.map((item) => ({ name: item.name, delta: Math.abs(item.delta) }));
+function TopItemsBarComponent({ title, items, tone }: { title: string; items: ItemEntry[]; tone: 'green' | 'red' }) {
+  const data = useMemo(() => items.map((item) => ({ name: item.name, delta: Math.abs(item.delta) })), [items]);
 
   return (
     <section className="panel">
@@ -42,3 +43,5 @@ export function TopItemsBar({ title, items, tone }: { title: string; items: Item
     </section>
   );
 }
+
+export const TopItemsBar = memo(TopItemsBarComponent);

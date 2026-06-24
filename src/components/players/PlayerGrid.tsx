@@ -8,14 +8,20 @@ export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOp
   const [sort, setSort] = useState('play');
 
   const filtered = useMemo(() => {
-    return players
-      .filter((player) => player.username.toLowerCase().includes(query.toLowerCase()))
-      .filter((player) => filter === 'all' || (filter === 'online' ? player.online : player.rank === filter))
-      .sort((a, b) => {
-        if (sort === 'seen') return new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime();
-        if (sort === 'rank') return a.rank.localeCompare(b.rank);
-        return b.play_time_hours - a.play_time_hours;
-      });
+    const normalizedQuery = query.trim().toLowerCase();
+    const result: PlayerSummary[] = [];
+
+    for (const player of players) {
+      if (normalizedQuery && !player.username.toLowerCase().includes(normalizedQuery)) continue;
+      if (filter !== 'all' && (filter === 'online' ? !player.online : player.rank !== filter)) continue;
+      result.push(player);
+    }
+
+    return result.sort((a, b) => {
+      if (sort === 'seen') return new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime();
+      if (sort === 'rank') return a.rank.localeCompare(b.rank);
+      return b.play_time_hours - a.play_time_hours;
+    });
   }, [players, query, filter, sort]);
 
   return (

@@ -242,7 +242,16 @@ export async function fetchStatsOverview(signal?: AbortSignal): Promise<StatsOve
     fetchGlobalLeader('top/minecraft:jump?section=minecraft:custom', signal),
   ]);
 
-  const sorted = [...items].sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  const sortedByDelta = [...items].sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  const topGrowing = [];
+  const topFalling = [];
+
+  for (const item of sortedByDelta) {
+    if (item.delta > 0 && topGrowing.length < 10) topGrowing.push(item);
+    if (item.delta < 0 && topFalling.length < 10) topFalling.push(item);
+    if (topGrowing.length === 10 && topFalling.length === 10) break;
+  }
+
   const serverTotals = normalizeServerTotals(summary);
   const activityHeatmapPoints = buildActivityHeatmap(history);
   const playtimeHeatmap = buildDailyTicksHeatmap(activityHeatmap.daily_playtime_ticks, activityHeatmapPoints);
@@ -250,8 +259,8 @@ export async function fetchStatsOverview(signal?: AbortSignal): Promise<StatsOve
   return {
     total_items: items.reduce((sum, item) => sum + item.count, 0),
     total_unique_items: items.length,
-    top_growing: sorted.filter((item) => item.delta > 0).slice(0, 10),
-    top_falling: sorted.filter((item) => item.delta < 0).slice(0, 10),
+    top_growing: topGrowing,
+    top_falling: topFalling,
     most_common: [...items].sort((a, b) => b.count - a.count).slice(0, 10),
     activity_heatmap: activityHeatmapPoints,
     playtime_heatmap: playtimeHeatmap.points,
