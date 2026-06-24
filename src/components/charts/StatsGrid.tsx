@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Activity, Box, Clock, Hammer, Pickaxe, Skull, Swords, TrendingUp, Users } from 'lucide-react';
 import type { StatsOverview } from '../../types/stats';
-import { formatNumber } from '../../utils/format';
+import { formatNumber, formatNumberWithUnit } from '../../utils/format';
 
 type StatsGridProps = {
   overview: StatsOverview;
@@ -19,7 +19,7 @@ export function StatsGrid({ overview, variant = 'grid' }: StatsGridProps) {
 
   const cards = [
     { label: 'Всего игроков', value: formatNumber(overview.server_totals.players_total, false), icon: Users, tone: 'cyan' },
-    { label: 'Общее время', value: `${formatNumber(overview.server_totals.total_playtime_hours)}ч`, icon: Clock, tone: 'green' },
+    { label: 'Общее время', value: formatNumberWithUnit(overview.server_totals.total_playtime_hours, 'ч'), icon: Clock, tone: 'green' },
     { label: 'Смерти', value: formatNumber(overview.server_totals.total_deaths, false), icon: Skull, tone: 'red' },
     { label: 'Убийства', value: formatNumber(overview.server_totals.total_player_kills + overview.server_totals.total_mob_kills, false), icon: Swords, tone: 'acc' },
     { label: 'Добыто блоков', value: formatNumber(overview.server_totals.blocks_mined), icon: Pickaxe, tone: 'cyan' },

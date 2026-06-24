@@ -81,6 +81,7 @@ export function ActivityHeatmap({
     if (!tooltipRef.current) return;
     const date = element.dataset.date ?? '';
     const delta = element.dataset.delta ?? '0';
+    const estimated = element.dataset.estimated === 'true';
     const rect = element.getBoundingClientRect();
     const anchorX = rect.left + rect.width / 2;
     const anchorY = rect.top;
@@ -89,7 +90,7 @@ export function ActivityHeatmap({
     const deltaElement = tooltip.querySelector('b');
 
     if (dateElement) dateElement.textContent = formatHeatmapDate(date);
-    if (deltaElement) deltaElement.textContent = `+${formatNumber(Number(delta), false)} ${unitLabel}`;
+    if (deltaElement) deltaElement.textContent = `${estimated ? '~' : '+'}${formatNumber(Number(delta), false)} ${unitLabel}`;
 
     tooltip.hidden = false;
     const tooltipRect = tooltip.getBoundingClientRect();
@@ -129,7 +130,7 @@ export function ActivityHeatmap({
       >
         {points.map((point) => {
           const level = Math.ceil((point.item_delta / max) * 4);
-          const label = `${formatHeatmapDate(point.date)}: +${formatNumber(point.item_delta, false)} ${unitLabel}`;
+          const label = `${formatHeatmapDate(point.date)}: ${point.estimated ? 'примерно ' : '+'}${formatNumber(point.item_delta, false)} ${unitLabel}`;
           return (
             <button
               key={point.date}
@@ -138,6 +139,7 @@ export function ActivityHeatmap({
               aria-label={label}
               data-date={point.date}
               data-delta={point.item_delta}
+              data-estimated={point.estimated ? 'true' : undefined}
             />
           );
         })}

@@ -5,13 +5,34 @@ import { DEFAULT_THEME, type ThemeVars, useThemeStore } from '../../store/themeS
 
 const groups: Array<[string, Array<keyof ThemeVars>]> = [
   ['Фоны', ['--bg', '--bg-deep', '--s1', '--s2', '--s3', '--s4', '--s5']],
-  ['Акценты', ['--acc', '--acc-2', '--grn', '--red']],
+  ['Границы и слои', ['--b1', '--b2', '--b3', '--modal-backdrop']],
+  ['Акценты', ['--acc', '--acc-d', '--acc-g', '--acc-l', '--acc-2', '--acc-2-d']],
+  ['Статусы', ['--grn', '--grn-d', '--red', '--red-d', '--ok', '--warn', '--vip']],
   ['Текст', ['--txt', '--txt2', '--mut']],
+  ['Тени', [
+    '--shadow-panel',
+    '--shadow-card-hover',
+    '--shadow-chart-hover',
+    '--shadow-modal',
+    '--shadow-modal-strong',
+    '--shadow-drawer',
+    '--shadow-mobile-nav',
+    '--shadow-range-thumb',
+  ]],
 ];
 const radiusKeys = Object.keys(DEFAULT_THEME).filter((key) => key.startsWith('--radius')) as Array<keyof ThemeVars>;
+const colorPickerKeys = new Set(
+  Object.entries(DEFAULT_THEME)
+    .filter(([, value]) => /^#[0-9a-f]{6}$/i.test(value))
+    .map(([key]) => key as keyof ThemeVars),
+);
 
 function normalizeColor(value: string) {
   return value.startsWith('#') ? value : '#000000';
+}
+
+function getThemeFieldId(kind: string, key: keyof ThemeVars) {
+  return `theme-${kind}-${key.replace(/^--/, '').replace(/[^a-z0-9-]/gi, '-')}`;
 }
 
 function getRadiusNumber(value: string) {
@@ -19,7 +40,9 @@ function getRadiusNumber(value: string) {
 }
 
 function getRadiusMax(key: keyof ThemeVars) {
-  return key === '--radius-round' ? 100 : 36;
+  if (key === '--radius-round') return 100;
+  if (key === '--radius-pill') return 999;
+  return 36;
 }
 
 function getRadiusUnit(key: keyof ThemeVars) {
@@ -77,8 +100,8 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
     const text = await file.text();
     clearCommitTimers();
     const incoming = JSON.parse(text);
-    setDraftTheme({ ...DEFAULT_THEME, ...incoming });
     importTheme(incoming);
+    if (fileRef.current) fileRef.current.value = '';
   }
 
   function handleReset() {
@@ -107,10 +130,27 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
         <section className="theme-group" key={title}>
           <h3>{title}</h3>
           {keys.map((key) => (
-            <label className="theme-row" key={key}>
+            <label className={`theme-row ${colorPickerKeys.has(key) ? '' : 'text-only'}`} key={key}>
               <span>{key}</span>
-              <input type="color" value={normalizeColor(draftTheme[key])} onChange={(e) => commitVar(key, e.target.value)} onBlur={(e) => commitNow(key, e.target.value)} />
-              <input value={draftTheme[key]} onChange={(e) => commitVar(key, e.target.value, 140)} onBlur={(e) => commitNow(key, e.target.value)} />
+              {colorPickerKeys.has(key) ? (
+                <input
+                  id={getThemeFieldId('color', key)}
+                  name={getThemeFieldId('color', key)}
+                  type="color"
+                  value={normalizeColor(draftTheme[key])}
+                  onChange={(e) => commitVar(key, e.target.value)}
+                  onBlur={(e) => commitNow(key, e.target.value)}
+                />
+              ) : (
+                <span className="theme-swatch" style={{ background: draftTheme[key] }} aria-hidden="true" />
+              )}
+              <input
+                id={getThemeFieldId('value', key)}
+                name={getThemeFieldId('value', key)}
+                value={draftTheme[key]}
+                onChange={(e) => commitVar(key, e.target.value, 140)}
+                onBlur={(e) => commitNow(key, e.target.value)}
+              />
             </label>
           ))}
         </section>
@@ -121,6 +161,8 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
           <label className="theme-row radius-row" key={key}>
             <span>{key}</span>
             <input
+              id={getThemeFieldId('range', key)}
+              name={getThemeFieldId('range', key)}
               type="range"
               min="0"
               max={getRadiusMax(key)}
@@ -130,7 +172,13 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
               onPointerUp={(e) => commitNow(key, `${e.currentTarget.value}${getRadiusUnit(key)}`)}
               onKeyUp={(e) => commitNow(key, `${e.currentTarget.value}${getRadiusUnit(key)}`)}
             />
-            <input value={draftTheme[key]} onChange={(e) => commitVar(key, e.target.value, 140)} onBlur={(e) => commitNow(key, e.target.value)} />
+            <input
+              id={getThemeFieldId('value', key)}
+              name={getThemeFieldId('value', key)}
+              value={draftTheme[key]}
+              onChange={(e) => commitVar(key, e.target.value, 140)}
+              onBlur={(e) => commitNow(key, e.target.value)}
+            />
           </label>
         ))}
       </section>
@@ -138,7 +186,15 @@ export function ThemeEditor({ open, onClose }: { open: boolean; onClose: () => v
         <button type="button" onClick={handleReset}><RotateCcw size={16} /> Сбросить</button>
         <button type="button" onClick={exportCss}><Download size={16} /> CSS</button>
         <button type="button" onClick={() => fileRef.current?.click()}><Upload size={16} /> Импорт</button>
-        <input ref={fileRef} hidden type="file" accept="application/json" onChange={(e) => importFile(e.target.files?.[0])} />
+        <input
+          ref={fileRef}
+          id="theme-import-file"
+          name="theme-import-file"
+          hidden
+          type="file"
+          accept="application/json"
+          onChange={(e) => importFile(e.target.files?.[0])}
+        />
       </div>
       <pre className="theme-preview">{JSON.stringify(DEFAULT_THEME, null, 2).slice(0, 260)}...</pre>
     </aside>

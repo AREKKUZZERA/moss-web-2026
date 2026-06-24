@@ -19,23 +19,29 @@ export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOp
   }, [players, query, filter, sort]);
 
   return (
-    <section className="panel">
-      <div className="section-head">
-        <input className="field" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ник игрока" />
-      </div>
-      <div className="toolbar-line">
-        <div className="segmented">
-          {['all', 'online', 'vip', 'admin'].map((entry) => (
-            <button key={entry} type="button" className={filter === entry ? 'active' : ''} onClick={() => setFilter(entry)}>
-              {entry === 'all' ? 'Все' : entry}
-            </button>
-          ))}
+    <section className="panel players-panel">
+      <div className="players-controls">
+        <input
+          className="field player-search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ник игрока"
+          aria-label="Поиск игрока по нику"
+        />
+        <div className="players-toolbar">
+          <div className="segmented player-filter-group" role="group" aria-label="Фильтр игроков">
+            {['all', 'online', 'vip', 'admin'].map((entry) => (
+              <button key={entry} type="button" className={filter === entry ? 'active' : ''} onClick={() => setFilter(entry)}>
+                {entry === 'all' ? 'Все' : entry}
+              </button>
+            ))}
+          </div>
+          <select className="field player-sort" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Сортировка игроков">
+            <option value="play">По времени игры</option>
+            <option value="seen">По дате захода</option>
+            <option value="rank">По рангу</option>
+          </select>
         </div>
-        <select className="field" value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="play">По времени игры</option>
-          <option value="seen">По дате захода</option>
-          <option value="rank">По рангу</option>
-        </select>
       </div>
       <div className="player-grid">
         {filtered.map((player) => <PlayerCard key={player.uuid} player={player} onOpen={onOpen} />)}

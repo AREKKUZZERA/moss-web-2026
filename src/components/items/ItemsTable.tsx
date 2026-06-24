@@ -54,44 +54,52 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
   const visible = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <section className="panel table-panel">
-      <div className="section-head">
-        <div>
+    <section className="panel table-panel items-dashboard-panel">
+      <div className="items-controls">
+        <div className="items-controls-head">
           <h2>Экономика предметов</h2>
-          <p>Сортировка: рост, без изменений, падение; внутри групп по модулю delta.</p>
+          <input
+            className="field item-search"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            placeholder="Найти предмет"
+            aria-label="Поиск предмета"
+          />
         </div>
-        <input className="field" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder="Найти предмет" />
-      </div>
-      <div className="chips item-categories">
-        {categories.map((entry) => (
-          <button
-            className={`chip ${entry === category ? 'active' : ''}`}
-            key={entry}
-            type="button"
-            onClick={() => { setCategory(entry); setPage(1); }}
-          >
-            {entry === 'all' ? 'Все' : entry}
-          </button>
-        ))}
-      </div>
-      <div className="items-sort-bar">
-        <span>Изменение</span>
-        <div className="segmented delta-sort">
-          {[
-            ['all', 'Все'],
-            ['up', 'Рост'],
-            ['flat', 'Без изменений'],
-            ['down', 'Падение'],
-          ].map(([value, label]) => (
-            <button
-              className={deltaSort === value ? 'active' : ''}
-              key={value}
-              type="button"
-              onClick={() => { setDeltaSort(value as DeltaSortMode); setPage(1); }}
+        <div className="items-filter-grid">
+          <div className="items-filter-group">
+            <span>Категория</span>
+            <select
+              className="field item-category-select"
+              value={category}
+              onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+              aria-label="Категория предметов"
             >
-              {label}
-            </button>
-          ))}
+              {categories.map((entry) => (
+                <option key={entry} value={entry}>{entry === 'all' ? 'Все категории' : entry}</option>
+              ))}
+            </select>
+          </div>
+          <div className="items-filter-group items-delta-group">
+            <span>Изменение</span>
+            <div className="segmented delta-sort" role="group" aria-label="Изменение количества предметов">
+              {[
+                ['all', 'Все'],
+                ['up', 'Рост'],
+                ['flat', 'Без изменений'],
+                ['down', 'Падение'],
+              ].map(([value, label]) => (
+                <button
+                  className={deltaSort === value ? 'active' : ''}
+                  key={value}
+                  type="button"
+                  onClick={() => { setDeltaSort(value as DeltaSortMode); setPage(1); }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div className="table-wrap">

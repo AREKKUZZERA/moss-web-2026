@@ -42,7 +42,6 @@ export function GlobalStatsLeaders({
       <div className="section-head compact">
         <div>
           <h2>Глобальные топы</h2>
-          <p>Данные из /moss/top по vanilla custom-статам.</p>
         </div>
       </div>
       <div className="global-leaders-grid">

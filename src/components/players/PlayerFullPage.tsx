@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { PlayerFull } from '../../types/player';
-import { formatDate, formatDuration, formatNumber, formatRelative } from '../../utils/format';
+import { formatDate, formatDuration, formatNumber, formatNumberWithUnit, formatRelative } from '../../utils/format';
 import { getPlayerSkin } from '../../utils/minecraft';
 
 function labelStat(id: string) {
@@ -67,6 +67,22 @@ function formatChartTick(value: string, denseSameDay: boolean) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return denseSameDay ? chartTime.format(parsed) : chartDateTime.format(parsed);
+}
+
+function getFocusedHoursDomain(values: number[]) {
+  if (!values.length) return [0, 'auto'] as const;
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min;
+  const padding = span > 0 ? span * 0.18 : Math.max(Math.abs(max) * 0.01, 1);
+
+  return [Math.max(0, min - padding), max + padding] as const;
+}
+
+function formatHoursTick(value: number) {
+  const rounded = Math.round(value);
+  return `${Number.isInteger(value) || Math.abs(value - rounded) < 0.05 ? rounded : value.toFixed(1)}ч`;
 }
 
 function StatPanel({
@@ -100,6 +116,7 @@ export function PlayerFullPage({ player }: { player: PlayerFull }) {
     timestamp: point.timestamp,
     hours: point.count,
   }));
+  const hoursDomain = getFocusedHoursDomain(data.map((point) => point.hours));
 
   return (
     <div className="detail-grid">
@@ -124,7 +141,14 @@ export function PlayerFullPage({ player }: { player: PlayerFull }) {
           <AreaChart data={data}>
             <CartesianGrid stroke="var(--b1)" vertical={false} />
             <XAxis dataKey="timestamp" stroke="var(--mut)" tickFormatter={(value) => formatChartTick(value, denseSameDay)} tickLine={false} axisLine={false} minTickGap={24} />
-            <YAxis stroke="var(--mut)" tickLine={false} axisLine={false} tickFormatter={(value) => `${value}ч`} />
+            <YAxis
+              stroke="var(--mut)"
+              tickLine={false}
+              axisLine={false}
+              domain={hoursDomain}
+              tickCount={7}
+              tickFormatter={(value) => formatHoursTick(Number(value))}
+            />
             <Tooltip
               contentStyle={{ background: 'var(--s2)', border: '1px solid var(--b2)' }}
               labelFormatter={(value) => formatChartTick(String(value), false)}
@@ -183,15 +207,15 @@ export function PlayerFullPage({ player }: { player: PlayerFull }) {
       <StatPanel
         title="Перемещение"
         items={[
-          { icon: Footprints, label: 'пешком', value: `${formatNumber(player.walk_meters)}м` },
-          { icon: Gauge, label: 'бегом', value: `${formatNumber(player.sprint_meters)}м` },
-          { icon: Waves, label: 'вплавь', value: `${formatNumber(player.swim_meters)}м` },
-          { icon: Plane, label: 'полет', value: `${formatNumber(player.fly_meters)}м` },
-          { icon: Mountain, label: 'карабканье', value: `${formatNumber(player.climb_meters)}м` },
-          { icon: HeartCrack, label: 'падение', value: `${formatNumber(player.fall_meters)}м` },
-          { icon: ShipWheel, label: 'лодка', value: `${formatNumber(player.boat_meters)}м` },
-          { icon: Archive, label: 'вагонетка', value: `${formatNumber(player.minecart_meters)}м` },
-          { icon: Footprints, label: 'лошадь', value: `${formatNumber(player.horse_meters)}м` },
+          { icon: Footprints, label: 'пешком', value: formatNumberWithUnit(player.walk_meters, 'м') },
+          { icon: Gauge, label: 'бегом', value: formatNumberWithUnit(player.sprint_meters, 'м') },
+          { icon: Waves, label: 'вплавь', value: formatNumberWithUnit(player.swim_meters, 'м') },
+          { icon: Plane, label: 'полет', value: formatNumberWithUnit(player.fly_meters, 'м') },
+          { icon: Mountain, label: 'карабканье', value: formatNumberWithUnit(player.climb_meters, 'м') },
+          { icon: HeartCrack, label: 'падение', value: formatNumberWithUnit(player.fall_meters, 'м') },
+          { icon: ShipWheel, label: 'лодка', value: formatNumberWithUnit(player.boat_meters, 'м') },
+          { icon: Archive, label: 'вагонетка', value: formatNumberWithUnit(player.minecart_meters, 'м') },
+          { icon: Footprints, label: 'лошадь', value: formatNumberWithUnit(player.horse_meters, 'м') },
         ]}
       />
       <StatPanel

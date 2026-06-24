@@ -8,6 +8,7 @@ export type HistoryPoint = {
 export type HeatmapPoint = {
   date: string;
   item_delta: number;
+  estimated?: boolean;
 };
 
 export type ServerTotals = {

@@ -1,6 +1,6 @@
 import { Clock, Footprints, Pickaxe, Skull, Swords } from 'lucide-react';
 import type { PlayerSummary } from '../../types/player';
-import { formatDuration, formatNumber, formatRelative } from '../../utils/format';
+import { formatDuration, formatNumber, formatNumberWithUnit, formatRelative } from '../../utils/format';
 import { getPlayerAvatar } from '../../utils/minecraft';
 
 export function PlayerCard({ player, onOpen }: { player: PlayerSummary; onOpen: (player: PlayerSummary) => void }) {
@@ -19,7 +19,7 @@ export function PlayerCard({ player, onOpen }: { player: PlayerSummary; onOpen: 
       <div className="player-stats">
         <span><Clock size={15} /> {formatDuration(player.play_time_hours)}</span>
         <span><Pickaxe size={15} /> {formatNumber(player.blocks_mined)}</span>
-        <span><Footprints size={15} /> {formatNumber(player.distance_meters)}м</span>
+        <span><Footprints size={15} /> {formatNumberWithUnit(player.distance_meters, 'м')}</span>
         <span><Swords size={15} /> {formatNumber(player.kills, false)}</span>
         <span><Skull size={15} /> {formatNumber(player.deaths, false)}</span>
       </div>

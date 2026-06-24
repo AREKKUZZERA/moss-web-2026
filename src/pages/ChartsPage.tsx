@@ -27,8 +27,14 @@ export function ChartsPage() {
         playerKills={overview.global_leaders.player_kills}
       />
       <div className="charts-activity">
-        <ActivityHeatmap points={overview.playtime_heatmap} title="Игровое время" description="365 дней recorded playtime." unitLabel="ч" tone="green" />
-        <ActivityHeatmap points={overview.activity_heatmap} title="Предметная активность" description="365 дней изменений предметов." unitLabel="предметов" />
+        <ActivityHeatmap
+          points={overview.playtime_heatmap}
+          title="Игровое время"
+          description="365 дней игрового времени."
+          unitLabel="ч"
+          tone="green"
+        />
+        <ActivityHeatmap points={overview.activity_heatmap} title="Активность по предметам" description="365 дней изменений предметов." unitLabel="предметов" />
       </div>
     </div>
   );

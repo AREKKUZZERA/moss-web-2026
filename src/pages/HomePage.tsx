@@ -19,14 +19,20 @@ export function HomePage() {
       <StatsGrid overview={overview} variant="marquee" />
       <div className="dashboard-grid">
         <ItemHistoryChart />
-        <ActivityHeatmap points={overview.playtime_heatmap} title="Игровое время" description="365 дней recorded playtime." unitLabel="ч" tone="green" />
+        <ActivityHeatmap
+          points={overview.playtime_heatmap}
+          title="Игровое время"
+          description="365 дней игрового времени."
+          unitLabel="ч"
+          tone="green"
+        />
       </div>
       <div className="top-charts-grid">
         <TopItemsBar title="ТОП рост" items={overview.top_growing} tone="green" />
         <TopItemsBar title="ТОП падение" items={overview.top_falling} tone="red" />
       </div>
       <div className="dashboard-grid">
-        <ActivityHeatmap points={overview.activity_heatmap} title="Предметная активность" description="365 дней изменений предметов." unitLabel="предметов" />
+        <ActivityHeatmap points={overview.activity_heatmap} title="Активность по предметам" description="365 дней изменений предметов." unitLabel="предметов" />
         <GlobalStatsLeaders
           playtime={overview.global_leaders.playtime}
           deaths={overview.global_leaders.deaths}
