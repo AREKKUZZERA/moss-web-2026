@@ -1,11 +1,9 @@
 function apiBase(configuredBase: string | undefined, proxyBase: string) {
-  if (!configuredBase) return proxyBase;
+  // Production requests must stay same-origin so Vercel can proxy them to the
+  // HTTP-only Minecraft services. A VITE_* override is useful only in dev.
+  if (import.meta.env.PROD) return proxyBase;
 
-  // An HTTPS page cannot fetch an HTTP endpoint. Keep production traffic on the
-  // same-origin Vercel rewrite even when an old VITE_*_API_BASE value is present.
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && /^http:\/\//i.test(configuredBase)) {
-    return proxyBase;
-  }
+  if (!configuredBase) return proxyBase;
 
   return configuredBase;
 }
