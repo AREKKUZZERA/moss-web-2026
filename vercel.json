@@ -10,7 +10,7 @@
     },
     {
       "source": "/moss/:path*",
-      "destination": "/api/moss?path=:path*"
+      "destination": "/moss?path=:path*"
     },
     {
       "source": "/(.*)",
