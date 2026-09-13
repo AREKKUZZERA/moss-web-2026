@@ -7,11 +7,11 @@
   "rewrites": [
     {
       "source": "/api/table/:path*",
-      "destination": "http://default-squad.ru:8542/:path*"
+      "destination": "http://213.21.57.115:8542/:path*"
     },
     {
       "source": "/api/moss/:path*",
-      "destination": "http://default-squad.ru:24442/moss/:path*"
+      "destination": "http://213.21.57.115:24442/moss/:path*"
     },
     {
       "source": "/(.*)",
