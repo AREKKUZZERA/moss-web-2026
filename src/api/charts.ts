@@ -128,7 +128,7 @@ function buildDailyTicksHeatmap(dailyTicks: Record<string, number> = {}, activit
   const keys = Object.keys(dailyTicks).sort();
   const realDays = keys.filter((key) => (dailyTicks[key] ?? 0) > 0).length;
   const activityDays = activityHeatmap.filter((point) => point.item_delta > 0).length;
-  const hasEnoughRealData = realDays >= 14 || realDays >= activityDays;
+  const hasEnoughRealData = realDays >= activityDays;
 
   if (!hasEnoughRealData && activityHeatmap.length) {
     return {
