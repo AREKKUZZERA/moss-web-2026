@@ -14,6 +14,8 @@ type TableItemsResponse = {
   createdAt?: string;
 };
 
+let pendingItemsRequest: Promise<ItemEntry[]> | null = null;
+
 function normalizeReportDate(value?: string) {
   if (!value) return new Date().toISOString();
 
@@ -419,6 +421,18 @@ function normalizeItem(item: TableItem, createdAt: string): ItemEntry {
 }
 
 export async function fetchItems(signal?: AbortSignal): Promise<ItemEntry[]> {
-  const payload = await tableApi<TableItemsResponse>('getTableItems', signal);
-  return (payload.items ?? []).map((item) => normalizeItem(item, payload.createdAt ?? ''));
+  if (!pendingItemsRequest) {
+    pendingItemsRequest = tableApi<TableItemsResponse>('getTableItems')
+      .then((payload) => (payload.items ?? []).map((item) => normalizeItem(item, payload.createdAt ?? '')))
+      .finally(() => {
+        pendingItemsRequest = null;
+      });
+  }
+
+  if (!signal) return pendingItemsRequest;
+
+  return Promise.race([
+    pendingItemsRequest,
+    new Promise<ItemEntry[]>((_, reject) => signal.addEventListener('abort', () => reject(signal.reason), { once: true })),
+  ]);
 }
