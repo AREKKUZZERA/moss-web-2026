@@ -71,9 +71,9 @@ export const changelogReleases = [
     ],
   },
   {
-    version: siteVersion,
+    version: '1.0.3',
     date: '24 июня 2026',
-    title: `Версия ${siteVersion}`,
+    title: `Версия 1.0.3`,
     description:
       'Релиз с оптимизацией загрузки графиков, снижением лишних перерисовок и более быстрыми вычислениями в списках без изменения дизайна.',
     changesCount: 6,
