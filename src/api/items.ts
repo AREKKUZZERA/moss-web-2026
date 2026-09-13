@@ -34,8 +34,8 @@ const categoryLabels = {
   colored: 'Цветные блоки',
   natural: 'Природные блоки',
   functional: 'Функциональные блоки',
-  redstone: 'Редстоун',
-  tools: 'Инструменты',
+  redstone: 'Редстоуновые блоки',
+  tools: 'Инструменты и приспособления',
   combat: 'Бой',
   food: 'Еда и напитки',
   ingredients: 'Ингредиенты',
@@ -75,11 +75,16 @@ const coloredBlocks = [
   'banner',
   'bed',
   'shulker_box',
-  'bundle',
 ];
 
+// These names and the order below follow the vanilla Creative inventory tabs.
+// Keep specialised tabs ahead of broad material rules: a redstone torch is not
+// simply a functional block, and a raw-iron block belongs to Natural blocks.
 const redstoneItems = [
   'redstone',
+  'redstone_torch',
+  'redstone_lamp',
+  'redstone_block',
   'repeater',
   'comparator',
   'piston',
@@ -93,13 +98,13 @@ const redstoneItems = [
   'tripwire_hook',
   'daylight_detector',
   'target',
+  'lightning_rod',
+  'copper_bulb',
+  'redstone_ore',
   'sculk_sensor',
   'calibrated_sculk_sensor',
   'crafter',
-  'trial_spawner',
-  'vault',
   'rail',
-  'minecart',
 ];
 
 const functionalBlocks = [
@@ -126,6 +131,8 @@ const functionalBlocks = [
   'lectern',
   'composter',
   'chest',
+  'ender_chest',
+  'trapped_chest',
   'barrel',
   'shulker_box',
   'bookshelf',
@@ -145,8 +152,10 @@ const functionalBlocks = [
   'bell',
   'respawn_anchor',
   'lodestone',
-  'end_crystal',
-  'dragon_egg',
+  'trial_spawner',
+  'vault',
+  'spawner',
+  'end_portal_frame',
 ];
 
 const toolsAndUtilities = [
@@ -173,12 +182,21 @@ const toolsAndUtilities = [
   'map',
   'firework_rocket',
   'music_disc',
+  'goat_horn',
+  'bundle',
+  'minecart',
+  'chest_minecart',
+  'furnace_minecart',
+  'tnt_minecart',
+  'hopper_minecart',
+  'command_block_minecart',
 ];
 
 const combatItems = [
   'sword',
   'trident',
   'mace',
+  'wind_charge',
   'bow',
   'crossbow',
   'arrow',
@@ -190,6 +208,8 @@ const combatItems = [
   'horse_armor',
   'turtle_helmet',
   'totem_of_undying',
+  'fire_charge',
+  'end_crystal',
 ];
 
 const foodAndDrinks = [
@@ -219,6 +239,9 @@ const foodAndDrinks = [
   'honey_bottle',
   'milk_bucket',
   'potion',
+  'ominous_bottle',
+  'dried_kelp',
+  'rotten_flesh',
 ];
 
 const ingredients = [
@@ -377,10 +400,6 @@ const buildingBlocks = [
   'trapdoor',
 ];
 
-function hasAny(value: string, entries: string[]) {
-  return entries.some((entry) => value.includes(entry));
-}
-
 function isColoredBlock(id: string) {
   return colors.some((color) => coloredBlocks.some((block) => id.includes(`${color}_${block}`)));
 }
@@ -389,17 +408,21 @@ function categoryFor(itemId: string) {
   const id = itemId.replace(/^minecraft:/, '');
 
   if (id.endsWith('_spawn_egg')) return categoryLabels.spawnEggs;
-  if (/(command_block|structure_block|structure_void|jigsaw|barrier|debug_stick|light)$/.test(id)) return categoryLabels.operator;
+  if (/(^|_)(command_block|structure_block|structure_void|jigsaw|barrier|debug_stick|light)(_|$)/.test(id)) return categoryLabels.operator;
   if (isColoredBlock(id)) return categoryLabels.colored;
-  if (hasAny(id, redstoneItems)) return categoryLabels.redstone;
-  if (hasAny(id, combatItems)) return categoryLabels.combat;
-  if (hasAny(id, toolsAndUtilities)) return categoryLabels.tools;
-  if (hasAny(id, foodAndDrinks)) return categoryLabels.food;
+
+  // Exact IDs are used for multi-word blocks; suffixes only cover material
+  // variants such as iron_pickaxe or diamond_chestplate.
+  if (redstoneItems.some((entry) => id === entry || id.endsWith(`_${entry}`))) return categoryLabels.redstone;
+  if (combatItems.some((entry) => id === entry || id.endsWith(`_${entry}`))) return categoryLabels.combat;
+  if (toolsAndUtilities.some((entry) => id === entry || id.endsWith(`_${entry}`))) return categoryLabels.tools;
+  if (foodAndDrinks.some((entry) => id === entry || id.endsWith(`_${entry}`))) return categoryLabels.food;
   if (/^raw_.*_block$/.test(id) || id.endsWith('_ore')) return categoryLabels.natural;
-  if (hasAny(id, ingredients)) return categoryLabels.ingredients;
-  if (hasAny(id, functionalBlocks)) return categoryLabels.functional;
-  if (hasAny(id, buildingBlocks)) return categoryLabels.building;
-  if (hasAny(id, naturalBlocks)) return categoryLabels.natural;
+  if (ingredients.some((entry) => id === entry || id.endsWith(`_${entry}`) || id.startsWith(`${entry}_`))) return categoryLabels.ingredients;
+  if (functionalBlocks.some((entry) => id === entry || id.endsWith(`_${entry}`) || id.startsWith(`${entry}_`))) return categoryLabels.functional;
+  if (buildingBlocks.some((entry) => id === entry || id.endsWith(`_${entry}`) || id.startsWith(`${entry}_`))) return categoryLabels.building;
+  if (naturalBlocks.some((entry) => id === entry || id.endsWith(`_${entry}`) || id.startsWith(`${entry}_`))) return categoryLabels.natural;
+  if (id === 'dragon_egg') return categoryLabels.natural;
 
   return categoryLabels.ingredients;
 }

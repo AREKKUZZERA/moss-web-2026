@@ -28,6 +28,8 @@ export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOp
     <section className="panel players-panel">
       <div className="players-controls">
         <input
+          id="player-search"
+          name="player-search"
           className="field player-search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -42,7 +44,7 @@ export function PlayerGrid({ players, onOpen }: { players: PlayerSummary[]; onOp
               </button>
             ))}
           </div>
-          <select className="field player-sort" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Сортировка игроков">
+          <select id="player-sort" name="player-sort" className="field player-sort" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Сортировка игроков">
             <option value="play">По времени игры</option>
             <option value="seen">По дате захода</option>
             <option value="rank">По рангу</option>

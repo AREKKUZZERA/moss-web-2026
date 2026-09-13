@@ -22,8 +22,8 @@ const minecraftCategoryOrder = [
   'Цветные блоки',
   'Природные блоки',
   'Функциональные блоки',
-  'Редстоун',
-  'Инструменты',
+  'Редстоуновые блоки',
+  'Инструменты и приспособления',
   'Бой',
   'Еда и напитки',
   'Ингредиенты',
@@ -65,6 +65,8 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
         <div className="items-controls-head">
           <h2>Экономика предметов</h2>
           <input
+            id="item-search"
+            name="item-search"
             className="field item-search"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setPage(1); }}
@@ -76,6 +78,8 @@ export function ItemsTable({ items }: { items: ItemEntry[] }) {
           <div className="items-filter-group">
             <span>Категория</span>
             <select
+              id="item-category"
+              name="item-category"
               className="field item-category-select"
               value={category}
               onChange={(e) => { setCategory(e.target.value); setPage(1); }}
