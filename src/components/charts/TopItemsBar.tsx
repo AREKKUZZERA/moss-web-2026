@@ -21,6 +21,8 @@ function ItemNameTick({ x = 0, y = 0, payload }: { x?: number; y?: number; paylo
 function TopItemsBarComponent({ title, items, tone }: { title: string; items: ItemEntry[]; tone: 'green' | 'red' }) {
   const data = useMemo(() => items.map((item) => ({ name: item.name, delta: Math.abs(item.delta) })), [items]);
 
+  if (data.length === 0) return null;
+
   return (
     <section className="panel">
       <div className="section-head compact">

@@ -13,10 +13,12 @@ function ChartFallback({ small = false }: { small?: boolean }) {
 }
 
 export function ChartsPage() {
-  const { overview, loading } = useStatsOverview();
+  const { overview, loading, error } = useStatsOverview();
   document.title = 'MOSS · Графики';
 
-  if (loading || !overview) return <div className="skeleton tall" />;
+  if (loading) return <div className="skeleton tall" />;
+  if (error) return <div className="empty">Ошибка загрузки: {error}</div>;
+  if (!overview) return <div className="empty">Данные сервера пока недоступны.</div>;
 
   return (
     <div className="page-stack">

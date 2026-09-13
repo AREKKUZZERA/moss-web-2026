@@ -17,13 +17,15 @@ export function useItemHistory(itemId: string, period: '7d' | '30d' | '90d' | 'a
 export function useStatsOverview() {
   const [overview, setOverview] = useState<StatsOverview | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const ac = new AbortController();
+    setError(null);
     fetchStatsOverview(ac.signal)
       .then(setOverview)
       .catch((e: Error) => {
-        if (e.name !== 'AbortError') console.error(e);
+        if (e.name !== 'AbortError') setError(e.message);
       })
       .finally(() => {
         if (!ac.signal.aborted) setLoading(false);
@@ -31,5 +33,5 @@ export function useStatsOverview() {
     return () => ac.abort();
   }, []);
 
-  return { overview, loading };
+  return { overview, loading, error };
 }

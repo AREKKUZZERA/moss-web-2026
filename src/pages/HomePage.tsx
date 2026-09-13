@@ -9,10 +9,12 @@ import { useItems } from '../hooks/useItems';
 
 export function HomePage() {
   const { items, loading: itemsLoading } = useItems();
-  const { overview } = useStatsOverview();
+  const { overview, loading, error } = useStatsOverview();
   document.title = 'MOSS · Dashboard';
 
-  if (!overview || itemsLoading) return <SkeletonPage />;
+  if (loading || itemsLoading) return <SkeletonPage />;
+  if (error) return <div className="empty">Ошибка загрузки: {error}</div>;
+  if (!overview) return <div className="empty">Данные сервера пока недоступны.</div>;
 
   return (
     <div className="page-stack">

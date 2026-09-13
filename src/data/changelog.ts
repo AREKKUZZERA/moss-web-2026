@@ -1,6 +1,75 @@
-export const siteVersion = '1.0.3';
+export const siteVersion = '1.0.4';
 
 export const changelogReleases = [
+  {
+    version: siteVersion,
+    date: '13 сентября 2026',
+    title: `Версия ${siteVersion}`,
+    description:
+      'Релиз с надёжной загрузкой данных на production, восстановлением оценочной истории игрового времени и понятными ошибками вместо бесконечной загрузки.',
+    changesCount: 6,
+    sections: [
+      {
+        title: 'Fixed',
+        groups: [
+          {
+            type: 'fix',
+            scope: 'api',
+            hash: 'local',
+            title: 'Исправлена загрузка данных через Vercel',
+            items: [
+              'Прямые streaming rewrites заменены серверным proxy, который полностью получает ответ игровых API перед отправкой в браузер.',
+              'Страницы Dashboard, Предметы, Графики и Игроки больше не должны зависать на skeleton при крупных ответах API.',
+              'Production-запросы закреплены на same-origin маршрутах `/api/moss` и `/api/table`.',
+            ],
+          },
+          {
+            type: 'fix',
+            scope: 'loading',
+            hash: 'local',
+            title: 'Добавлены timeout и состояния ошибок',
+            items: [
+              'Клиентские запросы завершаются по timeout через 25 секунд вместо бесконечного ожидания.',
+              'Dashboard и Графики показывают причину ошибки загрузки вместо постоянного skeleton.',
+            ],
+          },
+          {
+            type: 'fix',
+            scope: 'charts',
+            hash: 'local',
+            title: 'Восстановлена историческая heatmap игрового времени',
+            items: [
+              'Оценочная история остаётся на карте, пока реальных дневных данных недостаточно для покрытия периода.',
+              'Точные данные от сервера по-прежнему имеют приоритет, а оценочные дни помечаются в tooltip.',
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Changed',
+        groups: [
+          {
+            type: 'style',
+            scope: 'charts',
+            hash: 'local',
+            title: 'Улучшены подписи предметов на bar chart',
+            items: [
+              'Длинные названия в подписях оси сокращаются, а полное имя доступно через tooltip браузера.',
+            ],
+          },
+          {
+            type: 'chore',
+            scope: 'release',
+            hash: 'local',
+            title: 'Подготовлен релиз 1.0.4',
+            items: [
+              'Версия проекта в package.json, package-lock.json и данных сайта синхронизирована с 1.0.4.',
+            ],
+          },
+        ],
+      },
+    ],
+  },
   {
     version: siteVersion,
     date: '24 июня 2026',
