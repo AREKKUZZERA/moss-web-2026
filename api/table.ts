@@ -9,7 +9,14 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(20_000) });
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        'Accept-Encoding': 'identity',
+        Connection: 'close',
+      },
+      signal: AbortSignal.timeout(24_000),
+    });
     const body = Buffer.from(await response.arrayBuffer());
     res.status(response.status).setHeader('Content-Type', response.headers.get('content-type') ?? 'application/json');
     res.setHeader('Cache-Control', 'no-store');
