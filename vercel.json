@@ -9,7 +9,7 @@
       "destination": "/api/table?path=:path*"
     },
     {
-      "source": "/api/moss/:path*",
+      "source": "/moss/:path*",
       "destination": "/api/moss?path=:path*"
     },
     {
