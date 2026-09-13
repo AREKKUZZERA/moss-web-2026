@@ -8,11 +8,11 @@ import { useStatsOverview } from '../hooks/useCharts';
 import { useItems } from '../hooks/useItems';
 
 export function HomePage() {
-  const { items, loading: itemsLoading } = useItems();
+  const { items } = useItems();
   const { overview, loading, error } = useStatsOverview();
   document.title = 'MOSS · Dashboard';
 
-  if (loading || itemsLoading) return <SkeletonPage />;
+  if (loading) return <SkeletonPage />;
   if (error) return <div className="empty">Ошибка загрузки: {error}</div>;
   if (!overview) return <div className="empty">Данные сервера пока недоступны.</div>;
 
