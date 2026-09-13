@@ -18,9 +18,8 @@ export const changelogReleases = [
             hash: 'local',
             title: 'Исправлена загрузка данных через Vercel',
             items: [
-              'Прямые streaming rewrites заменены серверным proxy, который полностью получает ответ игровых API перед отправкой в браузер.',
-              'Страницы Dashboard, Предметы, Графики и Игроки больше не должны зависать на skeleton при крупных ответах API.',
               'Production-запросы закреплены на same-origin маршрутах `/api/moss` и `/api/table`.',
+              'Маршруты Vercel направляют запросы к игровым API без mixed-content ошибок на HTTPS-сайте.',
             ],
           },
           {
