@@ -1,5 +1,7 @@
 const upstream = 'http://213.21.57.115:24442/moss';
 
+export const config = { regions: ['fra1'] };
+
 export default async function handler(req: any, res: any) {
   const path = Array.isArray(req.query.path) ? req.query.path.join('/') : req.query.path ?? '';
   const url = new URL(`${upstream}/${path}`);
