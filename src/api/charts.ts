@@ -231,7 +231,7 @@ export async function fetchStatsOverview(signal?: AbortSignal): Promise<StatsOve
   const [items, summary, history, activityHeatmap, activityTopDay, activityTopWeek, health, playtimeLeaders, deathLeaders, killLeaders, jumpLeaders] = await Promise.all([
     fetchItems(signal).catch(() => []),
     mossApi<SummaryResponse>('summary', signal),
-    fetchItemHistory('minecraft:all', 'all', signal),
+    fetchItemHistory('minecraft:all', 'all', signal).catch(() => []),
     mossApi<ActivityHeatmapResponse>('activity/heatmap', signal).catch(() => ({ daily_playtime_ticks: {} })),
     fetchActivityTop('day', signal).catch(() => []),
     fetchActivityTop('week', signal).catch(() => []),
