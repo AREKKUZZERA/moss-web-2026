@@ -1,5 +1,5 @@
 const defaultUpstream = 'http://213.21.57.115:8542';
-const timeoutMs = 8_000;
+const timeoutMs = 25_000;
 
 export default async function handler(req: any, res: any) {
   if (req.method && !['GET', 'HEAD'].includes(req.method)) {
@@ -26,7 +26,7 @@ export default async function handler(req: any, res: any) {
     const body = Buffer.from(await response.arrayBuffer());
     res.status(response.status);
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/json');
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     res.end(body);
   } catch (error) {
     const timedOut = error instanceof Error && error.name === 'TimeoutError';

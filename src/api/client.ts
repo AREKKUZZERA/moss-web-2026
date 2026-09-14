@@ -16,7 +16,7 @@ function joinUrl(base: string, path: string) {
 }
 
 export async function getJson<T>(base: string, path: string, signal?: AbortSignal): Promise<T> {
-  const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(10_000)]) : AbortSignal.timeout(10_000);
+  const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(30_000)]) : AbortSignal.timeout(30_000);
   const response = await fetch(joinUrl(base, path), {
     signal: requestSignal,
     cache: 'no-store',
