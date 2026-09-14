@@ -9,6 +9,7 @@ export function usePlayers() {
 
   useEffect(() => {
     const ac = new AbortController();
+    setError(null);
     fetchPlayers(ac.signal)
       .then(setPlayers)
       .catch((e: Error) => {
@@ -29,9 +30,15 @@ export function usePlayer(uuid?: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!uuid) return;
+    if (!uuid) {
+      setPlayer(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     const ac = new AbortController();
     setLoading(true);
+    setError(null);
     fetchPlayer(uuid, ac.signal)
       .then(setPlayer)
       .catch((e: Error) => {

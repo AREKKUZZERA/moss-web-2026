@@ -16,7 +16,7 @@ function joinUrl(base: string, path: string) {
 }
 
 export async function getJson<T>(base: string, path: string, signal?: AbortSignal): Promise<T> {
-  const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(25_000)]) : AbortSignal.timeout(25_000);
+  const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(10_000)]) : AbortSignal.timeout(10_000);
   const response = await fetch(joinUrl(base, path), {
     signal: requestSignal,
     cache: 'no-store',
@@ -24,7 +24,14 @@ export async function getJson<T>(base: string, path: string, signal?: AbortSigna
   });
 
   if (!response.ok) {
-    throw new Error(`API ${response.status}: ${response.statusText}`);
+    let detail = response.statusText;
+    try {
+      const payload = await response.json() as { error?: string };
+      if (payload.error) detail = payload.error;
+    } catch {
+      // Keep the HTTP status when an upstream returns a non-JSON error page.
+    }
+    throw new Error(`API ${response.status}: ${detail || 'Request failed'}`);
   }
 
   return response.json() as Promise<T>;

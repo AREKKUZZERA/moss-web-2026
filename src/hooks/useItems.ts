@@ -10,6 +10,7 @@ export function useItems() {
   useEffect(() => {
     const ac = new AbortController();
     setLoading(true);
+    setError(null);
     fetchItems(ac.signal)
       .then(setItems)
       .catch((e: Error) => {
