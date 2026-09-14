@@ -1,6 +1,6 @@
 type Request = {
   method?: string;
-  query: Record<string, string | string[] | undefined>;
+  query?: Record<string, string | string[] | undefined>;
 };
 
 type Response = {
@@ -19,7 +19,7 @@ function environment(name: string) {
   return processLike?.env?.[name];
 }
 
-function requestPath(query: Request['query']) {
+function requestPath(query: NonNullable<Request['query']>) {
   const path = Array.isArray(query.path) ? query.path.join('/') : query.path ?? '';
   const url = new URL(path, 'http://proxy.invalid');
 
@@ -37,10 +37,9 @@ export function createProxyHandler(defaultUpstream: string, errorName: string, e
       return;
     }
 
-    const upstream = environment(envName) ?? defaultUpstream;
-    const url = new URL(requestPath(req.query), `${upstream.replace(/\/$/, '')}/`);
-
     try {
+      const upstream = environment(envName) ?? defaultUpstream;
+      const url = new URL(requestPath(req.query ?? {}), `${upstream.replace(/\/$/, '')}/`);
       const response = await fetch(url, {
         headers: { Accept: 'application/json' },
         signal: AbortSignal.timeout(proxyTimeoutMs),
