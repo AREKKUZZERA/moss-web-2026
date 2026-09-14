@@ -13,9 +13,7 @@ export default async function handler(req: any, res: any) {
   try {
     const response = await fetch(url, {
       headers: {
-        Accept: 'application/json',
-        'Accept-Encoding': 'identity',
-        Connection: 'close',
+        Accept: 'application/json'
       },
       signal: AbortSignal.timeout(24_000),
     });
