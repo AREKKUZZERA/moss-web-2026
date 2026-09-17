@@ -1,5 +1,5 @@
 import type { ItemEntry } from '../types/item';
-import { tableApi } from './client';
+import { itemTrackerApi } from './client';
 
 type TableItem = {
   id?: string;
@@ -430,7 +430,7 @@ function normalizeItem(item: TableItem): ItemEntry {
 
 export async function fetchItems(signal?: AbortSignal): Promise<ItemEntry[]> {
   if (!pendingItemsRequest) {
-    pendingItemsRequest = tableApi<TableItemsResponse>('api/items?limit=1000')
+    pendingItemsRequest = itemTrackerApi<TableItemsResponse>('?limit=1000&offset=0&sort=current&order=desc')
       .then((payload) => (payload.items ?? []).map((item) => normalizeItem(item)))
       .finally(() => {
         pendingItemsRequest = null;

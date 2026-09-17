@@ -5,8 +5,8 @@
   "installCommand": "npm ci",
   "rewrites": [
     {
-      "source": "/api/table/:path*",
-      "destination": "/api/table?path=:path*"
+      "source": "/api/items/:path*",
+      "destination": "/api/items?path=:path*"
     },
     {
       "source": "/api/moss/:path*",

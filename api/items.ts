@@ -14,7 +14,7 @@ export default async function handler(req: any, res: any) {
     const path = Array.isArray(query.path) ? query.path.join('/') : query.path || '';
     const upstream = (globalThis as { process?: { env?: Record<string, string | undefined> } })
       .process?.env?.TABLE_API_UPSTREAM || defaultUpstream;
-    const url = new URL(`${upstream.replace(/\/$/, '')}/${path}`);
+    const url = new URL(`${upstream.replace(/\/$/, '')}/api/items${path ? `/${path}` : ''}`);
 
     for (const [key, value] of Object.entries(query)) {
       if (key !== 'path' && typeof value === 'string') url.searchParams.set(key, value);
@@ -33,6 +33,6 @@ export default async function handler(req: any, res: any) {
     const timedOut = error instanceof Error && error.name === 'TimeoutError';
     res.status(timedOut ? 504 : 502);
     res.setHeader('Cache-Control', 'no-store');
-    res.json({ error: timedOut ? 'Table API timeout' : 'Table API unavailable' });
+    res.json({ error: timedOut ? 'Item Tracker API timeout' : 'Item Tracker API unavailable' });
   }
 }

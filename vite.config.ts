@@ -10,10 +10,9 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/moss/, '/moss'),
       },
-      '/api/table': {
+      '/api/items': {
         target: 'http://213.21.57.115:8787',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/table/, ''),
       },
     },
   },
