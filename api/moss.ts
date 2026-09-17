@@ -1,12 +1,6 @@
 const defaultUpstream = 'http://213.21.57.115:8080/moss';
 const timeoutMs = 8_000;
 
-function getUpstream() {
-  const configuredUpstream = (globalThis as { process?: { env?: Record<string, string | undefined> } })
-    .process?.env?.MOSS_API_UPSTREAM || defaultUpstream;
-  return configuredUpstream.replace(':24442/moss', ':8080/moss');
-}
-
 export default async function handler(req: any, res: any) {
   if (req.method && !['GET', 'HEAD'].includes(req.method)) {
     res.status(405);
@@ -18,7 +12,7 @@ export default async function handler(req: any, res: any) {
   try {
     const query = req.query || {};
     const path = Array.isArray(query.path) ? query.path.join('/') : query.path || '';
-    const url = new URL(`${getUpstream().replace(/\/$/, '')}/${path}`);
+    const url = new URL(`${defaultUpstream}/${path}`);
 
     for (const [key, value] of Object.entries(query)) {
       if (key !== 'path' && typeof value === 'string') url.searchParams.set(key, value);

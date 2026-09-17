@@ -12,9 +12,7 @@ export default async function handler(req: any, res: any) {
   try {
     const query = req.query || {};
     const path = Array.isArray(query.path) ? query.path.join('/') : query.path || '';
-    const upstream = (globalThis as { process?: { env?: Record<string, string | undefined> } })
-      .process?.env?.TABLE_API_UPSTREAM || defaultUpstream;
-    const url = new URL(`${upstream.replace(/\/$/, '')}/api/items${path ? `/${path}` : ''}`);
+    const url = new URL(`${defaultUpstream}/api/items${path ? `/${path}` : ''}`);
 
     for (const [key, value] of Object.entries(query)) {
       if (key !== 'path' && typeof value === 'string') url.searchParams.set(key, value);
