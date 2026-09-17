@@ -1,5 +1,5 @@
 const defaultUpstream = 'http://213.21.57.115:8080/moss';
-const timeoutMs = 8_000;
+const timeoutMs = 6_000;
 
 export default async function handler(req: any, res: any) {
   if (req.method && !['GET', 'HEAD'].includes(req.method)) {
@@ -18,10 +18,21 @@ export default async function handler(req: any, res: any) {
       if (key !== 'path' && typeof value === 'string') url.searchParams.set(key, value);
     }
 
-    const response = await fetch(url, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    let response: Response | undefined;
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        response = await fetch(url, {
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+        if (response.ok || attempt === 1) break;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 1) throw error;
+      }
+    }
+    if (!response) throw lastError ?? new Error('Moss API request failed');
     const body = new Uint8Array(await response.arrayBuffer());
     res.status(response.status);
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/json');

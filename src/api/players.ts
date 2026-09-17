@@ -263,7 +263,7 @@ export async function fetchPlayers(signal?: AbortSignal): Promise<PlayerSummary[
     }
   }
 
-  await Promise.all(Array.from({ length: Math.min(4, sourcePlayers.length) }, loadDetails));
+  await Promise.all(Array.from({ length: Math.min(2, sourcePlayers.length) }, loadDetails));
   return players.map(normalizeSummary).sort((a, b) => Number(b.online) - Number(a.online));
 }
 
