@@ -12,7 +12,8 @@ export default async function handler(req: any, res: any) {
   try {
     const query = req.query || {};
     const path = Array.isArray(query.path) ? query.path.join('/') : query.path || '';
-    const upstream = process.env.TABLE_API_UPSTREAM || defaultUpstream;
+    const upstream = (globalThis as { process?: { env?: Record<string, string | undefined> } })
+      .process?.env?.TABLE_API_UPSTREAM || defaultUpstream;
     const url = new URL(`${upstream.replace(/\/$/, '')}/${path}`);
 
     for (const [key, value] of Object.entries(query)) {
@@ -23,7 +24,7 @@ export default async function handler(req: any, res: any) {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(timeoutMs),
     });
-    const body = Buffer.from(await response.arrayBuffer());
+    const body = new Uint8Array(await response.arrayBuffer());
     res.status(response.status);
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/json');
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');

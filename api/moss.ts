@@ -2,7 +2,8 @@ const defaultUpstream = 'http://213.21.57.115:8080/moss';
 const timeoutMs = 25_000;
 
 function getUpstream() {
-  const configuredUpstream = process.env.MOSS_API_UPSTREAM || defaultUpstream;
+  const configuredUpstream = (globalThis as { process?: { env?: Record<string, string | undefined> } })
+    .process?.env?.MOSS_API_UPSTREAM || defaultUpstream;
   return configuredUpstream.replace(':24442/moss', ':8080/moss');
 }
 
@@ -28,7 +29,7 @@ export default async function handler(req: any, res: any) {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(timeoutMs),
     });
-    const body = Buffer.from(await response.arrayBuffer());
+    const body = new Uint8Array(await response.arrayBuffer());
     res.status(response.status);
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/json');
     res.setHeader('Cache-Control', 'no-store');
