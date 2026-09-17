@@ -1,14 +1,6 @@
 import type { ActivityLeader, GlobalStatLeader, HeatmapPoint, HistoryPoint, ServerHealth, ServerTotals, StatsOverview } from '../types/stats';
 import { fetchItems } from './items';
-import { mossApi, tableApi } from './client';
-
-type ChartPoint = {
-  date?: string;
-  time?: string;
-  timestamp?: string;
-  value?: number;
-  count?: number;
-};
+import { mossApi } from './client';
 
 type SummaryResponse = {
   players_total?: number;
@@ -167,13 +159,6 @@ function calculateWeeklyItemGrowth(history: HistoryPoint[]) {
   return Math.max(0, lastPoint.count - (previousPoint?.count ?? lastPoint.count));
 }
 
-function periodLength(period: '7d' | '30d' | '90d' | 'all') {
-  if (period === '7d') return 7;
-  if (period === '30d') return 30;
-  if (period === '90d') return 90;
-  return Infinity;
-}
-
 function normalizeServerTotals(summary: SummaryResponse): ServerTotals {
   const totals = summary.totals ?? {};
   return {
@@ -214,17 +199,9 @@ async function fetchGlobalLeader(path: string, signal?: AbortSignal) {
 export async function fetchItemHistory(
   _itemId = 'minecraft:diamond',
   period: '7d' | '30d' | '90d' | 'all' = '30d',
-  signal?: AbortSignal,
+  _signal?: AbortSignal,
 ): Promise<HistoryPoint[]> {
-  const payload = await tableApi<ChartPoint[]>('getMossChartData', signal);
-  return payload
-    .map((point) => ({
-      timestamp: point.timestamp ?? point.time ?? point.date ?? '',
-      count: point.count ?? point.value ?? 0,
-    }))
-    .filter((point) => point.timestamp)
-    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-    .slice(-periodLength(period));
+  return [];
 }
 
 export async function fetchStatsOverview(signal?: AbortSignal): Promise<StatsOverview> {

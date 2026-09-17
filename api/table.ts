@@ -1,4 +1,4 @@
-const defaultUpstream = 'http://213.21.57.115:8542';
+const defaultUpstream = 'http://213.21.57.115:8787';
 const timeoutMs = 25_000;
 
 export default async function handler(req: any, res: any) {

@@ -2,32 +2,17 @@ import type { ItemEntry } from '../types/item';
 import { tableApi } from './client';
 
 type TableItem = {
-  itemId?: string;
-  itemCount?: number;
-  itemName?: string;
-  amountDiff?: number;
-  diff?: number;
+  id?: string;
+  current?: number;
+  previous?: number;
+  delta?: number;
 };
 
 type TableItemsResponse = {
   items?: TableItem[];
-  createdAt?: string;
 };
 
 let pendingItemsRequest: Promise<ItemEntry[]> | null = null;
-
-function normalizeReportDate(value?: string) {
-  if (!value) return new Date().toISOString();
-
-  const ruDate = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
-  if (ruDate) {
-    const [, day, month, year] = ruDate;
-    return `${year}-${month}-${day}T00:00:00.000Z`;
-  }
-
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
-}
 
 const categoryLabels = {
   building: 'Строительные блоки',
@@ -427,26 +412,26 @@ function categoryFor(itemId: string) {
   return categoryLabels.ingredients;
 }
 
-function normalizeItem(item: TableItem, createdAt: string): ItemEntry {
-  const id = item.itemId ?? 'minecraft:unknown';
-  const count = item.itemCount ?? 0;
-  const delta = item.amountDiff ?? 0;
+function normalizeItem(item: TableItem): ItemEntry {
+  const id = item.id ?? 'minecraft:unknown';
+  const count = item.current ?? 0;
+  const delta = item.delta ?? 0;
 
   return {
     id,
-    name: item.itemName ?? id.replace('minecraft:', ''),
+    name: id.replace('minecraft:', ''),
     count,
-    prev_count: count - delta,
+    prev_count: item.previous ?? count - delta,
     delta,
     category: categoryFor(id),
-    last_updated: normalizeReportDate(createdAt),
+    last_updated: new Date().toISOString(),
   };
 }
 
 export async function fetchItems(signal?: AbortSignal): Promise<ItemEntry[]> {
   if (!pendingItemsRequest) {
-    pendingItemsRequest = tableApi<TableItemsResponse>('getTableItems')
-      .then((payload) => (payload.items ?? []).map((item) => normalizeItem(item, payload.createdAt ?? '')))
+    pendingItemsRequest = tableApi<TableItemsResponse>('api/items?limit=1000')
+      .then((payload) => (payload.items ?? []).map((item) => normalizeItem(item)))
       .finally(() => {
         pendingItemsRequest = null;
       });

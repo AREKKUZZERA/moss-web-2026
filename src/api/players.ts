@@ -245,7 +245,17 @@ function normalizeFull(player: ApiPlayer): PlayerFull {
 
 export async function fetchPlayers(signal?: AbortSignal): Promise<PlayerSummary[]> {
   const payload = await mossApi<PlayersResponse>('players', signal);
-  return (payload.players ?? []).map(normalizeSummary).sort((a, b) => Number(b.online) - Number(a.online));
+  const players = await Promise.all(
+    (payload.players ?? []).map(async (player) => {
+      try {
+        return await mossApi<ApiPlayer>(`players/${player.uuid}`, signal);
+      } catch (error) {
+        if (signal?.aborted) throw error;
+        return player;
+      }
+    }),
+  );
+  return players.map(normalizeSummary).sort((a, b) => Number(b.online) - Number(a.online));
 }
 
 export async function fetchPlayer(uuid: string, signal?: AbortSignal): Promise<PlayerFull> {
