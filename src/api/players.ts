@@ -244,8 +244,27 @@ function normalizeFull(player: ApiPlayer): PlayerFull {
 }
 
 export async function fetchPlayers(signal?: AbortSignal): Promise<PlayerSummary[]> {
-  const payload = await mossApi<PlayersResponse>('players?stats=true', signal);
-  return (payload.players ?? []).map(normalizeSummary).sort((a, b) => Number(b.online) - Number(a.online));
+  const payload = await mossApi<PlayersResponse>('players', signal);
+  const sourcePlayers = payload.players ?? [];
+  const players: ApiPlayer[] = [];
+  let nextIndex = 0;
+
+  async function loadDetails() {
+    while (nextIndex < sourcePlayers.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      const player = sourcePlayers[index];
+      try {
+        players[index] = await mossApi<ApiPlayer>(`players/${player.uuid}`, signal);
+      } catch (error) {
+        if (signal?.aborted) throw error;
+        players[index] = player;
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(4, sourcePlayers.length) }, loadDetails));
+  return players.map(normalizeSummary).sort((a, b) => Number(b.online) - Number(a.online));
 }
 
 export async function fetchPlayer(uuid: string, signal?: AbortSignal): Promise<PlayerFull> {
