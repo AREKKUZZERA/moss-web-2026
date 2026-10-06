@@ -1,15 +1,10 @@
 function apiBase(configuredBase: string | undefined, proxyBase: string) {
-  // Production requests must stay same-origin so Vercel can proxy them to the
-  // HTTP-only Minecraft services. A VITE_* override is useful only in dev.
   if (import.meta.env.PROD) return proxyBase;
-
-  if (!configuredBase) return proxyBase;
-
-  return configuredBase;
+  return configuredBase || proxyBase;
 }
 
 const MOSS_API_BASE = apiBase(import.meta.env.VITE_MOSS_API_BASE, '/api/moss');
-const TABLE_API_BASE = apiBase(import.meta.env.VITE_TABLE_API_BASE, '/api/table');
+const ITEM_TRACKER_API_BASE = apiBase(import.meta.env.VITE_ITEM_TRACKER_API_BASE, '/api/items');
 
 function joinUrl(base: string, path: string) {
   return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
@@ -38,4 +33,4 @@ export async function getJson<T>(base: string, path: string, signal?: AbortSigna
 }
 
 export const mossApi = <T>(path: string, signal?: AbortSignal) => getJson<T>(MOSS_API_BASE, path, signal);
-export const tableApi = <T>(path: string, signal?: AbortSignal) => getJson<T>(TABLE_API_BASE, path, signal);
+export const itemTrackerApi = <T>(path: string, signal?: AbortSignal) => getJson<T>(ITEM_TRACKER_API_BASE, path, signal);

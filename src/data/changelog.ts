@@ -18,7 +18,7 @@ export const changelogReleases = [
             hash: 'local',
             title: 'Исправлена загрузка данных через Vercel',
             items: [
-              'Production-запросы закреплены на same-origin маршрутах `/api/moss` и `/api/table`.',
+              'Production-запросы закреплены на same-origin маршрутах `/api/moss` и `/api/items`.',
               'Маршруты Vercel направляют запросы к игровым API без mixed-content ошибок на HTTPS-сайте.',
             ],
           },
